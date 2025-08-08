@@ -55,7 +55,7 @@ const NewPermit = () => {
         mobile: form.mobile || '',
       };
 
-      const permitResponse = await fetch(buildApiUrl('/permits'), {
+      const permitResponse = await fetch(buildApiUrl('/permit'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(permitData),
