@@ -32,7 +32,7 @@ const limiter = rateLimit({
 app.use('/api/', limiter);
 
 // Dynamic CORS configuration
-const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:3000,http://localhost:3001,https://bplo-user-ui.onrender.com,https://bplo-user-ui-1.onrender.com')
+const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:3000,http://localhost:3001,https://bplo-user-1.onrender.com,https://bplo-user.onrender.com')
   .split(',')
   .map(origin => origin.trim());
 

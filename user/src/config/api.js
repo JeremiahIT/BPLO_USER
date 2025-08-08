@@ -2,11 +2,11 @@
 const API_CONFIG = {
   // Development environment
   development: {
-    baseURL: 'https://bplo-user-ui.onrender.com/api'
+    baseURL: 'https://bplo-user.onrender.com/api'
   },
   // Production environment (Render deployment)
   production: {
-    baseURL: 'https://bplo-user-ui.onrender.com/api'
+    baseURL: 'https://bplo-user.onrender.com/api'
   }
 };
 
