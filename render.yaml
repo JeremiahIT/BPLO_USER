@@ -2,7 +2,7 @@ services:
   - type: web
     name: bplo-user-frontend
     env: static
-    buildCommand: cd user && npm install && npm run build
+    buildCommand: cd user && npm install && npx react-scripts build
     staticPublishPath: ./user/build
     routes:
       - type: rewrite
