@@ -15,12 +15,13 @@
   display: block;
   margin-bottom: 16px;
   font-size: 1rem;
+  font-color: #333;
 }
 .renewal-form input {
   width: 100%;
   padding: 8px;
   margin-top: 4px;
-  border: 1px solid #ccc;
+  border: 1px solid #000000;
   border-radius: 4px;
   font-size: 1rem;
 }
