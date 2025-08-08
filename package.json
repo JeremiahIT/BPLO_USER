@@ -1,0 +1,14 @@
+{
+  "name": "bplo-user",
+  "version": "1.0.0",
+  "description": "BPLO User Management System",
+  "scripts": {
+    "build": "cd user && npm install && npm run build",
+    "start": "cd user && npm start",
+    "dev": "cd user && npm start",
+    "install-deps": "cd user && npm install"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
