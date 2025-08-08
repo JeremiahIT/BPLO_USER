@@ -1,0 +1,44 @@
+/* Plain styles for renewal permit form */
+.renewal-form-container {
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px #0001;
+}
+.renewal-form h2 {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.renewal-form label {
+  display: block;
+  margin-bottom: 16px;
+  font-size: 1rem;
+}
+.renewal-form input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+.renewal-form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+}
+.renewal-form-actions button {
+  padding: 8px 20px;
+  font-size: 1rem;
+  border: 1px solid #1976d2;
+  background: #fff;
+  color: #1976d2;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.renewal-form-actions button[type="submit"] {
+  background: #1976d2;
+  color: #fff;
+}

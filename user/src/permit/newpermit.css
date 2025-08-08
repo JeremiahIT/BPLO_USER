@@ -1,0 +1,233 @@
+/* Back button styling */
+.back-dashboard-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 0.8rem 1.5rem;
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 10;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.back-dashboard-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #000000;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 1) 0%, rgba(13, 38, 19, 1) 35%, rgba(9, 79, 20, 1) 100%);
+  min-height: 100vh;
+}
+
+.permit-form-container {
+  max-width: 700px;
+  margin: 4vh auto;
+  background: rgba(128, 128, 128, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  padding: 2.5rem 2rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.permit-form-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  pointer-events: none;
+}
+
+.permit-form-container:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
+}
+
+.permit-section-title {
+  font-weight: bold;
+  font-size: 1.15rem;
+  margin: 2rem 0 1rem 0;
+  color: #fff;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 1;
+}
+
+.permit-form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 1.2rem;
+  align-items: flex-end;
+  position: relative;
+  z-index: 1;
+}
+
+.permit-form-row > div {
+  flex: 1 1 220px;
+  min-width: 180px;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 0.6rem 0.7rem;
+  margin-top: 0.25rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  backdrop-filter: blur(5px);
+}
+
+input::placeholder, textarea::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+input:focus, select:focus, textarea:focus {
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+select option {
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+}
+
+/* Button container for side-by-side alignment */
+.button-container {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+button {
+  background: rgba(128, 128, 128, 0.2);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  margin-top: 0;
+  cursor: pointer;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+  min-width: 100px;
+}
+
+button:hover, button:focus {
+  background: rgba(128, 128, 128, 0.3);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button[type="button"]:not(:first-child) {
+  background: rgba(128, 128, 128, 0.15);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+button[type="button"]:not(:first-child):hover {
+  background: rgba(128, 128, 128, 0.25);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+label {
+  font-weight: 500;
+  color: #fff;
+  margin-bottom: 0.2rem;
+  display: block;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 1;
+}
+
+ul {
+  padding-left: 1.2rem;
+  margin: 0.5rem 0 1rem 0;
+  color: rgba(255, 255, 255, 0.9);
+  position: relative;
+  z-index: 1;
+}
+
+input[type="checkbox"], input[type="radio"] {
+  width: auto;
+  margin-right: 0.5em;
+  accent-color: rgba(255, 255, 255, 0.8);
+}
+
+@media (max-width: 700px) {
+  .permit-form-container {
+    padding: 1rem 0.5rem;
+    max-width: 99vw;
+    margin: 2vh auto;
+  }
+  
+  .permit-form-row {
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  
+  .permit-section-title {
+    font-size: 1rem;
+    margin: 1.2rem 0 0.7rem 0;
+  }
+  
+  button {
+    font-size: 0.85rem;
+    padding: 0.6rem 1rem;
+    min-width: 80px;
+  }
+  
+  .button-container {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .back-dashboard-btn {
+    top: 10px;
+    left: 10px;
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+  }
+}
