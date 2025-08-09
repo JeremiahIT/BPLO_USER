@@ -29,10 +29,17 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// Dynamic CORS configuration
-const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:3000,http://localhost:3001,https://bplo-user-1.onrender.com,https://bplo-user.onrender.com')
-  .split(',')
-  .map(origin => origin.trim());
+//Dynamic CORS configuration
+// const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:3000,http://localhost:3001,https://bplo-user-1.onrender.com,https://bplo-user.onrender.com')
+//   .split(',')
+//   .map(origin => origin.trim());
+
+  const allowedOrigins = [
+  'https://bplo-user-1.onrender.com',
+  'https://bplo-user.onrender.com',
+  'http://localhost:3000',
+  'http://localhost:3001'
+];
 
 app.use(cors({
   origin: (origin, callback) => {
