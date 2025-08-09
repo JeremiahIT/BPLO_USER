@@ -75,6 +75,31 @@ const Dashboard = () => {
           ))}
         </div>
 
+        {/* Analytics Section */}
+        <section className="analytics-section">
+          <h2 className="section-subtitle">Analytics</h2>
+          <div className="analytics-grid">
+            <div className="analytics-card">
+              <div className="analytics-content">
+                <span className="analytics-label">No. of Population</span>
+                <span className="analytics-value">0</span>
+              </div>
+              <div className="analytics-icon" aria-hidden>
+                👥
+              </div>
+            </div>
+            <div className="analytics-card">
+              <div className="analytics-content">
+                <span className="analytics-label">Available Lots in San Pablo</span>
+                <span className="analytics-value">0</span>
+              </div>
+              <div className="analytics-icon" aria-hidden>
+                📍
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Modal Overlay */}
         {activeModal && (
           <div className="modal-overlay" onClick={closeModal}>
