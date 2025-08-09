@@ -1,5 +1,5 @@
 // AUTHENTICATION MIDDLEWARE DISABLED - NO LOGIN REQUIRED
-/*
+
 const jwt = require('jsonwebtoken');
 const db = require('../config/database');
 
@@ -39,5 +39,4 @@ const requireRole = (roles) => {
   };
 };
 
-// module.exports = { auth, requireRole };
-*/ 
+ module.exports = { auth, requireRole };
