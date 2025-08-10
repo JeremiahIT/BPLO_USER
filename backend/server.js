@@ -34,17 +34,14 @@ app.use('/api/', limiter);
 //   .split(',')
 //   .map(origin => origin.trim());
 
-  const allowedOrigins = [
-  'https://bplo-user-1.onrender.com',
-  'https://bplo-user.onrender.com',
-  'http://localhost:3000',
-  'http://localhost:3001'
-];
+const allowedOrigins = (process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map(origin => origin.trim())
+  .filter(origin => origin.length > 0);
 
 app.use(cors({
   origin: (origin, callback) => {
-    // allow requests with no origin (like mobile apps or curl)
-    if (!origin) return callback(null, true);
+    if (!origin) return callback(null, true); // allow requests with no origin
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -53,6 +50,7 @@ app.use(cors({
   },
   credentials: true
 }));
+
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
