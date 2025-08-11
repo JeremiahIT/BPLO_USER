@@ -1,7 +1,7 @@
 // API Configuration
 const API_CONFIG = {
   development: {
-    baseURL: 'https://bplo-user.onrender.com/api'
+    baseURL: 'http://localhost:5000/api'
   },
   production: {
     baseURL: 'https://bplo-user.onrender.com/api'
