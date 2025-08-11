@@ -43,7 +43,7 @@ router.post('/', [
 router.get('/', async (req, res) => {
   try {
     const result = await db.query(
-      `SELECT * FROM business_renewal ORDER BY created_at DESC NULLS LAST, id DESC`,
+      `SELECT * FROM business_renewal ORDER BY id DESC`,
       []
     );
     res.json({ renewals: result.rows });
