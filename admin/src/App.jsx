@@ -2,13 +2,10 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Dashboard from './mainpage/dashboard';
 import NewPermit from "./permits/new_permit";
+import RenewalPermit from "./permits/renewal_permit";
 
 function HomePage() {
   return <h2>Home Page</h2>;
-}
-
-function RenewalPermit() {
-  return <h2>Renewal Permit Page</h2>;
 }
 
 function App() {
