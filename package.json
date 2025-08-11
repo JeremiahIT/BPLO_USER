@@ -1,19 +1,13 @@
 {
-<<<<<<< HEAD
-  "dependencies": {
-    "cors": "^2.8.5",
-    "react-router-dom": "^7.8.0"
-  }
-}
-=======
   "name": "bplo_ui_users",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "cra-template-pwa": "2.0.0",
+    "cors": "^2.8.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.8.0",
+    "react-router-dom": "^7.8.0",
+    "cra-template-pwa": "2.0.0",
     "react-scripts": "^5.0.1",
     "web-vitals": "^3.0.0"
   },
@@ -46,4 +40,3 @@
     ]
   }
 }
->>>>>>> 41d9f8ef4804b38fb4a4c1b724a10575b8742d81

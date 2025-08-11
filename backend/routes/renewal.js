@@ -39,4 +39,32 @@ router.post('/', [
   }
 });
 
+// List all business renewals
+router.get('/', async (req, res) => {
+  try {
+    const result = await db.query(
+      `SELECT * FROM business_renewal ORDER BY created_at DESC NULLS LAST, id DESC`,
+      []
+    );
+    res.json({ renewals: result.rows });
+  } catch (error) {
+    console.error('Get renewals error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+router.get('/', async (req, res) => {
+  try {
+    const result = await db.query(
+      `SELECT * FROM business_renewal ORDER BY created_at DESC NULLS LAST, id DESC`,
+      []
+    );
+    res.json({ renewals: result.rows });
+  } catch (error) {
+    console.error('Get renewals error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+
 module.exports = router;
