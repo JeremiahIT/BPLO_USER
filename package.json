@@ -1,6 +1,49 @@
 {
+<<<<<<< HEAD
   "dependencies": {
     "cors": "^2.8.5",
     "react-router-dom": "^7.8.0"
   }
 }
+=======
+  "name": "bplo_ui_users",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "cra-template-pwa": "2.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.8.0",
+    "react-scripts": "^5.0.1",
+    "web-vitals": "^3.0.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "dev": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "engines": {
+    "node": "18.x"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
+>>>>>>> 41d9f8ef4804b38fb4a4c1b724a10575b8742d81
