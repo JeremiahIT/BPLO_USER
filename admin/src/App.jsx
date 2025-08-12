@@ -1,7 +1,8 @@
 import React from 'react';  
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Dashboard from "/mainpage/dashboard.jsx";
-import NewPermit from "/permits/new_permit.jsx"; // Added .jsx extension
+import Dashboard from "/mainpage/dashboard";
+import NewPermit from "/permits/new_permit";
+import RenewalPermit from "/permits/renewal_permit";
 
 function App() {
   return (
@@ -9,7 +10,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/permits/new_permit" element={<NewPermit />} />
-        <Route path="/permits/renewal_permit" element={<NewPermit />} /> {/* Placeholder */}
+        <Route path="/permits/renewal_permit" element={<RenewalPermit />} />
       </Routes>
     </Router>
   );

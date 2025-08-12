@@ -1,0 +1,44 @@
+.zoning-form-container {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 15px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.zoning-form-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+.zoning-form-container label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.zoning-form-container input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.zoning-form-container button {
+  width: 100%;
+  margin-top: 20px;
+  padding: 10px;
+  background: #2980b9;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.zoning-form-container button:hover {
+  background: #21618c;
+}
