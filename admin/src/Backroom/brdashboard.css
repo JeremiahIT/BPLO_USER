@@ -1,5 +1,4 @@
 .brdashboard {
-<<<<<<< HEAD
   text-align: center;
   padding: 20px;
 }
@@ -22,7 +21,6 @@
 
 .button-grid button:hover {
   background-color: #e0e0e0;
-=======
   font-family: Arial, sans-serif;
   text-align: center;
   padding: 30px;
@@ -71,5 +69,4 @@
 
 .back-button:hover {
   background-color: #7f8c8d;
->>>>>>> c7e4b8da6c783ac05068fc06385d37c0dfc612b4
 }
