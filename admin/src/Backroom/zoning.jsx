@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
 import { buildApiUrl } from '../config/api';
 import './zoning.css';
@@ -96,9 +95,9 @@ export default function Zoning() {
     </div>
   );
 }
-=======
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { buildApiUrl } from '../config/api';
 import './zoning.css';
->>>>>>> c7e4b8da6c783ac05068fc06385d37c0dfc612b4
+

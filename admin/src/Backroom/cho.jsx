@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React from 'react';
 import './cho.css';
 
@@ -12,9 +11,8 @@ export default function Cho() {
     </div>
   );
 }
-=======
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { buildApiUrl } from '../config/api';
 import './cho.css';
->>>>>>> c7e4b8da6c783ac05068fc06385d37c0dfc612b4
