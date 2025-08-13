@@ -24,7 +24,7 @@ export default function ContactForm() {
     e.preventDefault();
 
     try {
-      const response = await fetch(buildApiUrl('/submit-contact'), {
+      const response = await fetch(buildApiUrl('/cho/submit-contact'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

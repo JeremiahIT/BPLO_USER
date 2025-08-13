@@ -38,7 +38,7 @@ router.post(
       const query = `
         INSERT INTO solid_waste_forms 
         (business_name, business_address, tin, email_address, contact_no, zoning_classification, solid_waste_clearance_fee)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
       `;
 
       await db.query(query, [

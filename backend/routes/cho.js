@@ -35,7 +35,7 @@ router.post(
       const query = `
         INSERT INTO cho_forms 
         (email_contact, business_name, business_address, tin, zoning_classification, cho_clearance_fee)
-        VALUES (?, ?, ?, ?, ?, ?)
+        VALUES ($1, $2, $3, $4, $5, $6)
       `;
 
       await db.query(query, [
