@@ -35,6 +35,7 @@ app.use('/api/', limiter);
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
+  'http://localhost:5173',
   'https://bplo-user-1.onrender.com',
   'https://bplo-user.onrender.com'
 ];
