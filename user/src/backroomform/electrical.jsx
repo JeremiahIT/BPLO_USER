@@ -25,7 +25,7 @@ export default function ElectricalForm() {
     e.preventDefault();
 
     try {
-      const response = await fetch(buildApiUrl('/submit-electrical'), {
+      const response = await fetch(buildApiUrl('/electrical/submit-electrical'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

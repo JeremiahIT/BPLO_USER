@@ -25,7 +25,7 @@ export default function OboForm() {
     e.preventDefault();
 
     try {
-      const response = await fetch(buildApiUrl('/submit-obo'), {
+      const response = await fetch(buildApiUrl('/obo/submit-obo'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
