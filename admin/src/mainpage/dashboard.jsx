@@ -12,11 +12,7 @@ export default function Dashboard() {
           <ul>
             <li><Link to="/permits/new_permit">New Permit</Link></li>
             <li><Link to="/permits/renewal_permit">Renewal Permit</Link></li>
-<<<<<<< HEAD
             <li><Link to="/Backroom/brdashboard">Backroom</Link></li>
-=======
-            <li><Link to="/permits/renewal_permit">Backroom</Link></li>
->>>>>>> c7e4b8da6c783ac05068fc06385d37c0dfc612b4
           </ul>
         </nav>
       </aside>
