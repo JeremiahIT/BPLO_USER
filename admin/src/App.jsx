@@ -1,8 +1,8 @@
 import React from 'react';  
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Dashboard from "/mainpage/dashboard";
-import NewPermit from "/permits/new_permit";
-import RenewalPermit from "/permits/renewal_permit";
+import Dashboard from "./mainpage/dashboard";
+import NewPermit from "./permits/new_permit";
+import RenewalPermit from "./permits/renewal_permit";
 
 function App() {
   return (
