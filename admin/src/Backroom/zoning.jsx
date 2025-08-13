@@ -1,10 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { buildApiUrl } from '../config/api';
 import './zoning.css';
-
-export default function Zoning() {
-  return (
-    <div className="zoning-page">
-      <h1>Zoning Information</h1>
-    </div>
-  );
-}
