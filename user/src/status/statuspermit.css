@@ -1,0 +1,26 @@
+.status-permit {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin-top: 50px;
+  color: #333;
+}
+
+.status-permit h1 {
+  font-size: 2rem;
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.status-permit p {
+  font-size: 1rem;
+  color: #555;
+}
+
+.status-permit {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 500px;
+  margin: 0 auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}

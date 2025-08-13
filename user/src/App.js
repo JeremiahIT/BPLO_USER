@@ -10,6 +10,7 @@ import OBO from './backroomform/obo';
 import ElectricalForm from './backroomform/electrical';
 import SolidWaste from './backroomform/solidwaste';
 import Zoning from './backroomform/zoning';
+import StatusPermit from './status/statuspermit';
 import './App.css';
 
 function App() {
@@ -25,6 +26,8 @@ function App() {
         <Route path="/electrical" element={<ElectricalForm />} />
         <Route path="/solidwaste" element={<SolidWaste />} />
         <Route path="/zoning" element={<Zoning />} />
+        <Route path="/statuspermit" element={<StatusPermit />} />
+
 
 
       </Routes>

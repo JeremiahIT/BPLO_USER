@@ -45,12 +45,13 @@ const Dashboard = () => {
           <button className="sidebar-btn" onClick={() => navigate('/renewalpermit')}>
             Renewal Permit
           </button>
-          <button className="sidebar-btn" onClick={() => navigate('/renewalpermit')}>
+          <button className="sidebar-btn" onClick={() => navigate('/statuspermit')}>
             Status Permit
           </button>
           <button className="sidebar-btn" onClick={() => navigate('/brdashboard')}>
             Backroom
           </button>
+          
         </div>
       </aside>
       <main className="dashboard-container">

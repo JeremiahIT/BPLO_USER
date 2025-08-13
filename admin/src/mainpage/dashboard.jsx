@@ -10,8 +10,9 @@ export default function Dashboard() {
         <h2 className="logo">MyApp</h2>
         <nav>
           <ul>
-            <li><Link to="/permits/new_permit">New Permit</Link></li> {/* Use Link instead of a */}
-            <li><Link to="/permits/renewal_permit">Renewal Permit</Link></li> {/* Updated for clarity */}
+            <li><Link to="/permits/new_permit">New Permit</Link></li>
+            <li><Link to="/permits/renewal_permit">Renewal Permit</Link></li>
+            <li><Link to="/permits/renewal_permit">Backroom</Link></li>
           </ul>
         </nav>
       </aside>
