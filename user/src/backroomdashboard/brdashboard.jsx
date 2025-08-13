@@ -23,7 +23,6 @@ export default function BrDashboard() {
         <div className="box-button" onClick={() => handleNavigation('/obo')}>Office of the build</div>
         <div className="box-button" onClick={() => handleNavigation('/solidwaste')}>Solid Waste Management</div>
         <div className="box-button" onClick={() => handleNavigation('/zoning')}>Zoning Area</div>
-        <div className="box-button" onClick={() => handleNavigation('/page6')}>Page 6</div>
       </div>
     </div>
   );

@@ -11,6 +11,11 @@ const { setupDatabase } = require('./setup');
 // const authRoutes = require('./routes/auth'); // AUTH DISABLED
 const permitRoutes = require('./routes/permit');
 const renewalRoutes = require('./routes/renewal');
+const zoningRoutes = require('./routes/zoning');
+const solidwasteRoutes = require('./routes/solidwaste');
+const oboRoutes = require('./routes/obo');
+const choRoutes = require('./routes/cho');
+const electricalRoutes = require('./routes/electrical');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -69,6 +74,11 @@ app.get('/health', (req, res) => {
 // app.use('/api/auth', authRoutes); // AUTH DISABLED
 app.use('/api/permits', permitRoutes);
 app.use('/api/renewals', renewalRoutes);
+app.use('/api/zoning', zoningRoutes);
+app.use('/api/solidwaste', solidwasteRoutes);
+app.use('/api/obo', oboRoutes);
+app.use('/api/cho', choRoutes);
+app.use('/api/electrical', electricalRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

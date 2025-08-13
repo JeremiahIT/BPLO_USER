@@ -7,9 +7,12 @@ export default function ContactForm() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    email: '',
-    phone: '',
-    address: ''
+    emailContact: '',
+    businessName: '',
+    businessAddress: '',
+    taxIdentificationNumber: '',
+    zoningClassification: '',
+    choClearanceFee: ''
   });
 
   const handleChange = (e) => {
@@ -32,49 +35,118 @@ export default function ContactForm() {
       }
 
       alert('Form submitted successfully!');
-      navigate('/'); // Redirect after submission
+      navigate('/');
     } catch (error) {
       console.error(error);
       alert('Error submitting form.');
     }
   };
 
+  const handleBack = () => {
+    navigate('/brdashboard');
+  };
+
   return (
     <div className="form-container">
-      <h2>Contact Information</h2>
-      <form onSubmit={handleSubmit}>
-        <label>Email:</label>
-        <input
-          type="email"
-          name="email"
-          placeholder="Enter your email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">Business Contact & Compliance Form</h2>
+        <button
+          onClick={handleBack}
+          className="back-button"
+        >
+          Back to Dashboard
+        </button>
+      </div>
+      <div className="form-wrapper">
+        <form className="form-content" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label className="form-label">Email Contact No.:</label>
+            <input
+              type="email"
+              name="emailContact"
+              placeholder="Enter your email"
+              value={formData.emailContact}
+              onChange={handleChange}
+              className="form-input"
+              required
+            />
+          </div>
 
-        <label>Phone Number:</label>
-        <input
-          type="tel"
-          name="phone"
-          placeholder="Enter your phone number"
-          value={formData.phone}
-          onChange={handleChange}
-          required
-        />
+          <div className="form-group">
+            <label className="form-label">Business Name:</label>
+            <input
+              type="text"
+              name="businessName"
+              placeholder="Enter business name"
+              value={formData.businessName}
+              onChange={handleChange}
+              className="form-input"
+              required
+            />
+          </div>
 
-        <label>Address:</label>
-        <input
-          type="text"
-          name="address"
-          placeholder="Enter your address"
-          value={formData.address}
-          onChange={handleChange}
-          required
-        />
+          <div className="form-group">
+            <label className="form-label">Business Address:</label>
+            <input
+              type="text"
+              name="businessAddress"
+              placeholder="Enter business address"
+              value={formData.businessAddress}
+              onChange={handleChange}
+              className="form-input"
+              required
+            />
+          </div>
 
-        <button type="submit">Submit</button>
-      </form>
+          <div className="form-group">
+            <label className="form-label">Business Tax Identification Number (TIN):</label>
+            <input
+              type="text"
+              name="taxIdentificationNumber"
+              placeholder="Enter TIN"
+              value={formData.taxIdentificationNumber}
+              onChange={handleChange}
+              className="form-input"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Zoning Classification of Business Location:</label>
+            <input
+              type="text"
+              name="zoningClassification"
+              placeholder="Enter zoning classification"
+              value={formData.zoningClassification}
+              onChange={handleChange}
+              className="form-input"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Cho Clearance Fee:</label>
+            <input
+              type="text"
+              name="choClearanceFee"
+              placeholder="Enter clearance fee details"
+              value={formData.choClearanceFee}
+              onChange={handleChange}
+              className="form-input"
+              required
+            />
+          </div>
+
+          <div className="flex justify-end mt-6">
+            <button
+              type="submit"
+              className="submit-button"
+            >
+              Submit
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

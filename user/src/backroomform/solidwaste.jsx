@@ -7,9 +7,13 @@ export default function SolidWasteForm() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    email: '',
-    phone: '',
-    address: ''
+    businessName: '',
+    businessAddress: '',
+    taxIdentificationNumber: '',
+    emailAddress: '',
+    contactNo: '',
+    zoningClassification: '',
+    solidWasteClearanceFee: ''
   });
 
   const handleChange = (e) => {
@@ -39,42 +43,124 @@ export default function SolidWasteForm() {
     }
   };
 
+  const handleBack = () => {
+    navigate('/brdashboard');
+  };
+
   return (
     <div className="solidwaste-form-container">
-      <h2>Solid Waste Contact Form</h2>
-      <form onSubmit={handleSubmit}>
-        <label>Email:</label>
-        <input
-          type="email"
-          name="email"
-          placeholder="Enter your email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">Solid Waste Permit Form</h2>
+        <button
+          onClick={handleBack}
+          className="back-button"
+        >
+          Back to Dashboard
+        </button>
+      </div>
+      <div className="form-wrapper">
+        <form className="form-content" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label className="form-label">Business Name:</label>
+            <input
+              type="text"
+              name="businessName"
+              placeholder="Enter business name"
+              value={formData.businessName}
+              onChange={handleChange}
+              className="form-input"
+              required
+            />
+          </div>
 
-        <label>Phone Number:</label>
-        <input
-          type="tel"
-          name="phone"
-          placeholder="Enter your phone number"
-          value={formData.phone}
-          onChange={handleChange}
-          required
-        />
+          <div className="form-group">
+            <label className="form-label">Business Address:</label>
+            <input
+              type="text"
+              name="businessAddress"
+              placeholder="Enter business address"
+              value={formData.businessAddress}
+              onChange={handleChange}
+              className="form-input"
+              required
+            />
+          </div>
 
-        <label>Address:</label>
-        <input
-          type="text"
-          name="address"
-          placeholder="Enter your address"
-          value={formData.address}
-          onChange={handleChange}
-          required
-        />
+          <div className="form-group">
+            <label className="form-label">Business Tax Identification Number (TIN):</label>
+            <input
+              type="text"
+              name="taxIdentificationNumber"
+              placeholder="Enter TIN"
+              value={formData.taxIdentificationNumber}
+              onChange={handleChange}
+              className="form-input"
+              required
+            />
+          </div>
 
-        <button type="submit">Submit</button>
-      </form>
+          <div className="form-group">
+            <label className="form-label">Email Address:</label>
+            <input
+              type="email"
+              name="emailAddress"
+              placeholder="Enter email address"
+              value={formData.emailAddress}
+              onChange={handleChange}
+              className="form-input"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Contact No.:</label>
+            <input
+              type="tel"
+              name="contactNo"
+              placeholder="Enter contact number"
+              value={formData.contactNo}
+              onChange={handleChange}
+              className="form-input"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Zoning Classification of Business Location:</label>
+            <input
+              type="text"
+              name="zoningClassification"
+              placeholder="Enter zoning classification"
+              value={formData.zoningClassification}
+              onChange={handleChange}
+              className="form-input"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Solid Waste Clearance Fee:</label>
+            <input
+              type="text"
+              name="solidWasteClearanceFee"
+              placeholder="Enter clearance fee details"
+              value={formData.solidWasteClearanceFee}
+              onChange={handleChange}
+              className="form-input"
+              required
+            />
+          </div>
+
+          <div className="flex justify-end mt-6">
+            <button
+              type="submit"
+              className="submit-button"
+            >
+              Submit
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
