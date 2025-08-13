@@ -36,7 +36,9 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
   'https://bplo-user-1.onrender.com',
-  'https://bplo-user.onrender.com'
+  'https://bplo-user.onrender.com',
+  'http://localhost:5173'
+  
 ];
 
 // CORS middleware
