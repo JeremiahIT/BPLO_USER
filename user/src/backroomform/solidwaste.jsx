@@ -25,7 +25,7 @@ export default function SolidWasteForm() {
     e.preventDefault();
 
     try {
-      const response = await fetch(buildApiUrl('/submit-solidwaste'), {
+      const response = await fetch(buildApiUrl('/solidwaste/submit-solidwaste'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

@@ -4,6 +4,20 @@ const db = require('../config/database');
 
 const router = express.Router();
 
+router.get('/', async (req, res) => {
+  try {
+    const result = await db.query(
+      `SELECT id, b_name, b_address, owner_name, created_at
+       FROM business_renewal
+       ORDER BY created_at DESC`
+    );
+    res.json({ renewals: result.rows || [] });
+  } catch (error) {
+    console.error('Get renewals error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // Create new business renewal
 router.post('/', [
   body('b_name').notEmpty(),

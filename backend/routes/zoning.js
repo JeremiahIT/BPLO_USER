@@ -37,7 +37,7 @@ router.post(
       const query = `
         INSERT INTO zoning_forms 
         (business_name, business_address, email_address, contact_number, tin, zoning_classification, obo_clearance_fee)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
       `;
 
       await db.query(query, [
