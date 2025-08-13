@@ -1,0 +1,38 @@
+.zoning-container {
+  padding: 20px;
+}
+
+.zoning-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.zoning-table th, .zoning-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.approve-btn {
+  background-color: #4CAF50;
+  color: white;
+  margin-right: 5px;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.disapprove-btn {
+  background-color: #f44336;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.approve-btn:hover {
+  background-color: #45a049;
+}
+
+.disapprove-btn:hover {
+  background-color: #da190b;
+}

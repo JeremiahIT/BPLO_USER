@@ -1,0 +1,16 @@
+.solidwaste-container {
+  padding: 20px;
+  background-color: #f5f9f5;
+  border-radius: 8px;
+  border: 1px solid #cde0cd;
+  font-family: Arial, sans-serif;
+  color: #333;
+  max-width: 800px;
+  margin: 20px auto;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.solidwaste-container p {
+  font-size: 16px;
+  line-height: 1.5;
+}
