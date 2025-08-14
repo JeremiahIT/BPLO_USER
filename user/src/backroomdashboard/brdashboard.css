@@ -1,63 +1,91 @@
-/* Container */
+/*
+  A clean and professional style for the BrDashboard component.
+  - Uses a fluid, responsive grid for the navigation buttons.
+  - The back button is a simple text link.
+  - Features hover effects and a modern color palette.
+  - Fully responsive on all screen sizes.
+*/
+
+/* Main container for the whole dashboard page */
 .brdashboard-container {
-  padding: 20px;
-  text-align: center;
-  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  padding: 24px;
+  background-color: #f4f7f9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-/* Back Button */
+/* Back button styling - text-only and positioned at the top-left */
 .back-button {
-  background: #555;
-  color: white;
-  padding: 8px 16px;
+  background: none;
   border: none;
-  border-radius: 6px;
+  color: #555;
+  font-size: 16px;
+  font-weight: 500;
   cursor: pointer;
-  font-size: 14px;
-  margin-bottom: 20px;
+  padding: 8px 12px;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+  align-self: flex-start;
+  margin-bottom: 32px;
 }
 
 .back-button:hover {
-  background: #333;
+  color: #1976d2;
 }
 
-/* Title */
-.dashboard-title {
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: #2c3e50;
+/* Page title */
+.brdashboard-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 32px;
+  text-align: center;
+  max-width: 1200px;
+  width: 100%;
 }
 
-/* Grid Layout */
+/* Grid container for the buttons */
 .button-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 15px;
-  max-width: 800px;
-  margin: 0 auto;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  width: 100%;
+  max-width: 1200px;
 }
 
-/* Box Button */
+/* Styling for each individual button in the grid */
 .box-button {
-  background: #3498db;
-  color: white;
-  padding: 30px 10px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: bold;
+  background-color: #ffffff;
+  color: #333;
+  padding: 40px 24px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .box-button:hover {
-  background: #2980b9;
-  transform: translateY(-3px);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-/* Responsive Tweaks */
-@media (max-width: 500px) {
-  .box-button {
-    padding: 20px 5px;
-    font-size: 14px;
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+  .brdashboard-container {
+    padding: 16px;
+  }
+  
+  .brdashboard-title {
+    font-size: 24px;
+  }
+
+  .button-grid {
+    gap: 16px;
   }
 }
