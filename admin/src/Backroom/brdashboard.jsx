@@ -1,18 +1,18 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { buildApiUrl } from '../config/api';
+// import { buildApiUrl } from '../config/api';
 import './brdashboard.css';
 
 export default function BrDashboard() {
   const navigate = useNavigate();
 
   const handleBack = () => {
-    navigate('/dashboard'); // Go back to dashboard route
+    navigate('/'); // Go back to dashboard route
   };
 
-  const handleClick = (buttonName) => {
-    alert(`You clicked ${buttonName}`);
-  };
+  // const handleClick = (buttonName) => {
+  //   alert(`You clicked ${buttonName}`);
+  // };
 
   return (
     <div className="brdashboard">
