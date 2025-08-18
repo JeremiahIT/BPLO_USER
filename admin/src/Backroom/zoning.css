@@ -1,38 +1,91 @@
-.zoning-container {
-  padding: 20px;
+.zoning-form-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.zoning-table {
+.form-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.form-content {
   width: 100%;
-  border-collapse: collapse;
 }
 
-.zoning-table th, .zoning-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
+.form-group {
+  margin-bottom: 1.5rem;
 }
 
-.approve-btn {
-  background-color: #4CAF50;
-  color: white;
-  margin-right: 5px;
-  padding: 5px 10px;
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: #374151;
+  background-color: #f9fafb;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.back-button {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  background-color: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.back-button:hover {
+  background-color: #e5e7eb;
+}
+
+.cancel-button {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  background-color: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.cancel-button:hover {
+  background-color: #e5e7eb;
+}
+
+.submit-button {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #ffffff;
+  background-color: #3b82f6;
   border: none;
-  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.2s;
 }
 
-.disapprove-btn {
-  background-color: #f44336;
-  color: white;
-  padding: 5px 10px;
-  border: none;
-  cursor: pointer;
-}
-
-.approve-btn:hover {
-  background-color: #45a049;
-}
-
-.disapprove-btn:hover {
-  background-color: #da190b;
+.submit-button:hover {
+  background-color: #2563eb;
 }

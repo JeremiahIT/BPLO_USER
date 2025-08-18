@@ -1,120 +1,169 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { buildApiUrl } from '../config/api';
 import './zoning.css';
 
-export default function Zoning() {
-  const [forms, setForms] = useState([]);
+export default function ZoningForm() {
+  const navigate = useNavigate();
 
-  // Fetch forms from backend
-  const fetchForms = async () => {
-    try {
-      // The API endpoint should be built correctly to include the base path
-      const res = await fetch(buildApiUrl('zoning/zoning-forms'));
-      if (!res.ok) {
-        console.error(`Error: ${res.status} ${res.statusText}`);
-        setForms([]);
-        return;
-      }
-      const data = await res.json();
-      setForms(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error('Error fetching zoning forms:', err);
-      setForms([]);
-    }
+  const [formData, setFormData] = useState({
+    businessName: '',
+    businessAddress: '',
+    emailAddress: '',
+    contactNumber: '',
+    tin: '',
+    zoningClassification: '',
+    oboClearanceFee: ''
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  useEffect(() => {
-    fetchForms();
-  }, []);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  // Handle Approve / Disapprove
-  const updateStatus = async (id, status) => {
     try {
-      const res = await fetch(buildApiUrl(`zoning/zoning-forms/${id}`), {
-        method: 'PATCH',
+      const response = await fetch(buildApiUrl('zoning/submit-zoning'), {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status })
+        body: JSON.stringify(formData)
       });
 
-      if (!res.ok) {
-        throw new Error('Failed to update status');
+      if (!response.ok) {
+        throw new Error('Failed to submit form');
       }
-      
-      alert(`Status updated to ${status} successfully!`);
-      fetchForms(); // Refresh table
-    } catch (err) {
-      console.error('Error updating status:', err);
-      alert('Error updating status.');
+
+      alert('Zoning form submitted successfully!');
+      navigate('/');
+    } catch (error) {
+      console.error(error);
+      alert('Error submitting Zoning form.');
     }
   };
-  
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'PHP',
-    }).format(amount);
+
+  const handleBack = () => {
+    navigate('/brdashboard');
   };
 
   return (
-    <div className="zoning-container">
+    <div className="zoning-form-container">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Zoning Forms</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Zoning Information Form</h2>
+        <button
+          onClick={handleBack}
+          className="back-button"
+        >
+          Back to Dashboard
+        </button>
       </div>
-      {forms.length === 0 ? (
-        <p>No zoning forms found.</p>
-      ) : (
-        <div className="table-responsive">
-          <table className="zoning-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Business Name</th>
-                <th>Address</th>
-                <th>Email</th>
-                <th>Contact</th>
-                <th>TIN</th>
-                <th>Zoning Classification</th>
-                <th>OBO Fee</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {forms.map(form => (
-                <tr key={form.id}>
-                  <td>{form.id}</td>
-                  <td>{form.business_name}</td>
-                  <td>{form.business_address}</td>
-                  <td>{form.email_address}</td>
-                  <td>{form.contact_number}</td>
-                  <td>{form.tin}</td>
-                  <td>{form.zoning_classification}</td>
-                  <td>{formatCurrency(form.obo_clearance_fee)}</td>
-                  <td>{form.status}</td>
-                  <td>
-                    {form.status !== 'approved' && (
-                      <button 
-                        className="approve-btn" 
-                        onClick={() => updateStatus(form.id, 'approved')}
-                      >
-                        Approve
-                      </button>
-                    )}
-                    {form.status !== 'disapproved' && (
-                      <button 
-                        className="disapprove-btn" 
-                        onClick={() => updateStatus(form.id, 'disapproved')}
-                      >
-                        Disapprove
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <div className="form-wrapper">
+        <form className="form-content" onSubmit={handleSubmit}>
+          
+          <div className="form-group">
+            <label className="form-label">Business Name:</label>
+            <input
+              type="text"
+              name="businessName"
+              placeholder="Enter business name"
+              value={formData.businessName}
+              onChange={handleChange}
+              className="form-input"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Business Address:</label>
+            <input
+              type="text"
+              name="businessAddress"
+              placeholder="Enter business address"
+              value={formData.businessAddress}
+              onChange={handleChange}
+              className="form-input"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Email Address:</label>
+            <input
+              type="email"
+              name="emailAddress"
+              placeholder="Enter email address"
+              value={formData.emailAddress}
+              onChange={handleChange}
+              className="form-input"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Contact No.:</label>
+            <input
+              type="text"
+              name="contactNumber"
+              placeholder="Enter contact number"
+              value={formData.contactNumber}
+              onChange={handleChange}
+              className="form-input"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Business Tax Identification Number (TIN):</label>
+            <input
+              type="text"
+              name="tin"
+              placeholder="Enter TIN"
+              value={formData.tin}
+              onChange={handleChange}
+              className="form-input"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Zoning Classification of Business Location:</label>
+            <input
+              type="text"
+              name="zoningClassification"
+              placeholder="Enter zoning classification"
+              value={formData.zoningClassification}
+              onChange={handleChange}
+              className="form-input"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">OBO Clearance Fee:</label>
+            <input
+              type="number"
+              name="oboClearanceFee"
+              placeholder="Enter clearance fee"
+              value={formData.oboClearanceFee}
+              onChange={handleChange}
+              className="form-input"
+              step="0.01"
+              required
+            />
+          </div>
+
+          <div className="flex justify-end mt-6">
+            <button
+              type="submit"
+              className="submit-button"
+            >
+              Submit
+            </button>
+          </div>
+
+        </form>
+      </div>
     </div>
   );
 }

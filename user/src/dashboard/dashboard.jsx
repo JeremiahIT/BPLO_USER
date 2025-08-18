@@ -5,26 +5,10 @@ import './dashboard.css';
 const Dashboard = () => {
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [activeModal, setActiveModal] = useState(null);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-
-  const openModal = (modalId) => {
-    setActiveModal(modalId);
-  };
-
-  const closeModal = () => {
-    setActiveModal(null);
-  };
-
-  const dashboardBoxes = [
-    { id: 'box1', title: 'Operation Time', description: 'View business operation hours and schedule' },
-    { id: 'box2', title: 'Renewal Requirements', description: 'Handle permit renewals and extensions' },
-    { id: 'box3', title: 'Permit Requirements', description: 'View and manage permit requirements' },
-    { id: 'box4', title: 'Reports', description: 'Generate and view business reports' }
-  ];
 
   return (
     <div className="dashboard-layout">
@@ -45,13 +29,7 @@ const Dashboard = () => {
           <button className="sidebar-btn" onClick={() => navigate('/renewalpermit')}>
             Renewal Permit
           </button>
-          <button className="sidebar-btn" onClick={() => navigate('/statuspermit')}>
-            Status Permit
-          </button>
-          <button className="sidebar-btn" onClick={() => navigate('/brdashboard')}>
-            Backroom
-          </button>
-          
+
         </div>
       </aside>
       <main className="dashboard-container">
@@ -65,90 +43,12 @@ const Dashboard = () => {
           </button>
         </div>
         
-        <div className="dashboard-grid">
-          {dashboardBoxes.map((box) => (
-            <div
-              key={box.id}
-              className="dashboard-box"
-              onClick={() => openModal(box.id)}
-            >
-              <div className="box-content">
-                <h3 className="box-title">{box.title}</h3>
-                <p className="box-description">{box.description}</p>
-                <div className="box-icon">📋</div>
-              </div>
-            </div>
-          ))}
+        <div className="dashboard-content">
+          <h1 className="dashboard-welcome-title">Welcome to the Dashboard</h1>
+          <p className="dashboard-intro-text">
+            This is your central hub for managing business permits and related tasks. Use the navigation buttons on the side to get started.
+          </p>
         </div>
-
-
-        {/* Modal Overlay */}
-        {activeModal && (
-          <div className="modal-overlay" onClick={closeModal}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <div className="modal-header">
-                <h2 className="modal-title">
-                  {dashboardBoxes.find(box => box.id === activeModal)?.title}
-                </h2>
-                <button className="modal-close" onClick={closeModal}>
-                  <span className="close-icon">×</span>
-                </button>
-              </div>
-              <div className="modal-body">
-                {activeModal === 'box1' && (
-                  <div className="operation-time-info">
-                    <div className="operation-time-details">
-                      <p className="operation-days">Monday to Friday</p>
-                      <p className="operation-hours">8am to 5pm</p>
-                    </div>
-                  </div>
-                )}
-                
-                {activeModal === 'box2' && (
-                  <div className="requirements-info">
-                    <div className="requirements-list">
-                      <ul>
-                        <li>Community Tax Certificate</li>
-                        <li>Barangay Clearance for the current year</li>
-                        <li>Previous Year's Business Permit</li>
-                        <li>Financial Documents</li>
-                        <li>Community Tax Certificate</li>
-                      </ul>
-                    </div>
-                  </div>
-                )}
-                
-                {activeModal === 'box3' && (
-                  <div className="requirements-info">
-                    <div className="requirements-list">
-                      <ul>
-                        <li>Barangay Clearance</li>
-                        <li>Proof of Business Address</li>
-                        <li>Business Name Registration Certificate</li>
-                        <li>Community Tax Certificate</li>
-                        <li>Locational/Zoning Clearance</li>
-                        <li>Fire Safety Inspection Certificate</li>
-                      </ul>
-                    </div>
-                  </div>
-                )}
-                
-                {activeModal === 'box4' && (
-                  <>
-                    <p className="modal-text">Sample text</p>
-                    <p className="modal-description">
-                      This is a sample description for the Reports section. 
-                      Here you can add more detailed information about this feature.
-                    </p>
-                  </>
-                )}
-              </div>
-              <div className="modal-footer">
-                {/* Removed back button - only close button in header */}
-              </div>
-            </div>
-          </div>
-        )}
       </main>
     </div>
   );

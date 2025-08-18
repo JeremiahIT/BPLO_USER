@@ -1,0 +1,81 @@
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  background: #f4f6f9;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  background: #1e293b; /* dark navy */
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.sidebar-logo {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sidebar-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #e2e8f0;
+  transition: background 0.2s;
+}
+
+.sidebar-button:hover {
+  background: #334155;
+}
+
+.sidebar-button.active {
+  background: #475569;
+  color: #fff;
+}
+
+.sidebar-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Main content */
+.main-content {
+  flex: 1;
+  padding: 120px;
+}
+
+/* Analytics grid */
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.analytics-card {
+  background: #fff;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.analytics-icon {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 8px;
+  color: #007bff;
+}
