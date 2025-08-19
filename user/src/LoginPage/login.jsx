@@ -8,35 +8,38 @@ function Login() {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
 
-  // ✅ Auto-switch API (localhost vs Render)
-  const API_BASE =
-    window.location.hostname === 'localhost'
-      ? 'http://localhost:5000/api/auth'
-      : 'https://bplo-user-1.onrender.com/api/auth';
+  // ✅ Always use your deployed backend
+  const API_BASE = 'https://bplo-user.onrender.com/api/auth';
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
+      console.log("🔎 Using API:", `${API_BASE}/login`); // Debug log
+
       const response = await fetch(`${API_BASE}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
+      // Try parsing response safely
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        data = {};
+      }
 
       if (response.ok) {
         setMessage('✅ Login successful!');
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
-
-        // 👇 Direct redirect to Dashboard
         navigate('/dashboard');
       } else {
         setMessage(data.message || '❌ Login failed');
       }
     } catch (err) {
-      setMessage('⚠️ Error: ' + err.message);
+      setMessage('⚠️ Fetch error: ' + err.message);
     }
   };
 
