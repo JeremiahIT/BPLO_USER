@@ -12,28 +12,36 @@ function Registration() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+
     if (password !== confirmPassword) {
       setMessage('❌ Passwords do not match.');
       return;
     }
+
     try {
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://bplo-user-1.onrender.com';
-      console.log('Sending request to:', `${backendUrl}/api/auth/register`); // Debug log
+      const backendUrl =
+        process.env.REACT_APP_BACKEND_URL || 'https://bplo-user-1.onrender.com';
+
+      console.log('📡 Sending request to:', `${backendUrl}/api/auth/register`);
+
       const response = await fetch(`${backendUrl}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // ✅ important for CORS + cookies
         body: JSON.stringify({ email, username, password }),
       });
+
       const data = await response.json();
+
       if (response.ok) {
         setMessage('✅ Registration successful! Please log in.');
         setTimeout(() => navigate('/'), 2000);
       } else {
-        setMessage(data.message || 'Registration failed');
+        setMessage(data.message || data.error || '❌ Registration failed');
       }
     } catch (err) {
-      console.error('Registration error:', err); // Debug log
-      setMessage(`Error: ${err.message}. Please check if the backend is running.`);
+      console.error('Registration error:', err);
+      setMessage(`⚠️ Error: ${err.message}. Check if backend is running.`);
     }
   };
 
@@ -55,6 +63,7 @@ function Registration() {
               required
             />
           </div>
+
           <div className="input-group">
             <label className="form-label" htmlFor="username">Username</label>
             <input
@@ -67,6 +76,7 @@ function Registration() {
               required
             />
           </div>
+
           <div className="input-group">
             <label className="form-label" htmlFor="password">Password</label>
             <input
@@ -79,6 +89,7 @@ function Registration() {
               required
             />
           </div>
+
           <div className="input-group">
             <label className="form-label" htmlFor="confirm-password">Confirm Password</label>
             <input
@@ -91,9 +102,13 @@ function Registration() {
               required
             />
           </div>
+
           <div className="button-group">
-            <button className="submit-button secondary" type="submit">Register</button>
+            <button className="submit-button secondary" type="submit">
+              Register
+            </button>
           </div>
+
           <p className="link-text">
             Already have an account?{' '}
             <button
