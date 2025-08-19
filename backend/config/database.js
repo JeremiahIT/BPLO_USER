@@ -1,34 +1,38 @@
-const { Sequelize } = require('sequelize');
-require('dotenv').config();
+const { Sequelize } = require("sequelize");
+require("dotenv").config();
 
 const sequelize = new Sequelize(
-  process.env.DATABASE_URL ||
-    `postgres://${process.env.SUPABASE_DB_USER}:${process.env.SUPABASE_DB_PASSWORD}@${process.env.SUPABASE_DB_HOST}:${process.env.SUPABASE_DB_PORT}/${process.env.SUPABASE_DB_NAME}?sslmode=require`,
+  process.env.SUPABASE_DB_NAME,   // Database name
+  process.env.SUPABASE_DB_USER,   // User
+  process.env.SUPABASE_DB_PASSWORD, // Password
   {
-    dialect: 'postgres',
+    host: process.env.SUPABASE_DB_HOST, // Supabase host
+    port: process.env.SUPABASE_DB_PORT || 5432,
+    dialect: "postgres",
+    logging: process.env.NODE_ENV === "development" ? console.log : false,
     dialectOptions: {
       ssl: {
         require: true,
-        rejectUnauthorized: false, // Supabase requires this
+        rejectUnauthorized: false, // Required for Supabase SSL
       },
     },
     pool: {
-      max: 5,      // 👈 limit max clients (free tier allows ~10 total)
+      max: 5,      // Supabase free tier allows ~10 connections total
       min: 0,
       acquire: 30000,
-      idle: 10000, // release idle connections fast
+      idle: 10000,
     },
-    logging: process.env.NODE_ENV === 'development' ? console.log : false,
   }
 );
 
+// Test connection
 sequelize
   .authenticate()
   .then(() => {
-    console.log('✅ Connected to Supabase PostgreSQL database (Sequelize)');
+    console.log("✅ Connected to Supabase PostgreSQL database (Sequelize)");
   })
   .catch((err) => {
-    console.error('❌ Sequelize connection error:', err.message);
+    console.error("❌ Sequelize connection error:", err.message);
     process.exit(1);
   });
 
