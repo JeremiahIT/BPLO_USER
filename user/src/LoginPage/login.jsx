@@ -29,7 +29,9 @@ function Login() {
         setMessage('✅ Login successful!');
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
-        setTimeout(() => navigate('/dashboard'), 1000);
+
+        // 👇 Direct redirect to Dashboard
+        navigate('/dashboard');
       } else {
         setMessage(data.message || '❌ Login failed');
       }
