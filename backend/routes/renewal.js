@@ -1,55 +1,59 @@
 const express = require('express');
-const { body, validationResult } = require('express-validator');
-const db = require('../config/database');
-
+const jwt = require('jsonwebtoken');
+const Renewal = require('../models/Renewal');
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+// JWT Middleware
+const authMiddleware = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ message: 'No token provided' });
   try {
-    const result = await db.query(
-      `SELECT id, b_name, b_address, owner_name, created_at
-       FROM business_renewal
-       ORDER BY created_at DESC`
-    );
-    res.json({ renewals: result.rows || [] });
-  } catch (error) {
-    console.error('Get renewals error:', error);
-    res.status(500).json({ error: 'Server error' });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secretkey');
+    req.user = decoded;
+    next();
+  } catch (err) {
+    res.status(401).json({ message: 'Invalid token' });
+  }
+};
+
+// Submit renewal
+router.post('/', authMiddleware, async (req, res) => {
+  try {
+    const {
+      businessName,
+      businessAddress,
+      ownerName,
+      businessType,
+      grossReceipts,
+      barangayClearance,
+      fireSafetyCert,
+      cedulaNumber,
+    } = req.body;
+    const userId = req.user.id;
+    const renewal = await Renewal.create({
+      businessName,
+      businessAddress,
+      ownerName,
+      businessType,
+      grossReceipts,
+      barangayClearance,
+      fireSafetyCert,
+      cedulaNumber,
+      userId,
+    });
+    res.status(201).json({ message: 'Renewal submitted successfully', renewal });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 });
 
-// Create new business renewal
-router.post('/', [
-  body('b_name').notEmpty(),
-  body('b_address').notEmpty(),
-  body('owner_name').notEmpty()
-], async (req, res) => {
+// Get user's renewals
+router.get('/', authMiddleware, async (req, res) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const { b_name, b_address, owner_name } = req.body;
-
-    const result = await db.query(
-      `INSERT INTO business_renewal (b_name, b_address, owner_name)
-       VALUES ($1, $2, $3)
-       RETURNING *`,
-      [b_name, b_address, owner_name]
-    );
-
-    if (result && result.rows && result.rows[0]) {
-      res.status(201).json({
-        message: 'Business renewal submitted successfully',
-        renewal: result.rows[0]
-      });
-    } else {
-      res.status(500).json({ error: 'Failed to create renewal' });
-    }
-  } catch (error) {
-    console.error('Create renewal error:', error);
-    res.status(500).json({ error: 'Server error' });
+    const renewals = await Renewal.findAll({ where: { userId: req.user.id } });
+    res.json(renewals);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 });
 

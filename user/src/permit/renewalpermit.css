@@ -1,45 +1,81 @@
-/* Plain styles for renewal permit form */
-.renewal-form-container {
-  max-width: 400px;
-  margin: 40px auto;
-  padding: 24px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px #0001;
-}
-.renewal-form h2 {
-  text-align: center;
-  margin-bottom: 24px;
-}
-.renewal-form label {
-  display: block;
-  margin-bottom: 16px;
-  font-size: 1rem;
-  font-color: #333;
-}
-.renewal-form input {
-  width: 100%;
-  padding: 8px;
-  margin-top: 4px;
-  border: 1px solid #000000;
-  border-radius: 4px;
-  font-size: 1rem;
-}
-.renewal-form-actions {
+.renewal-container {
   display: flex;
-  justify-content: space-between;
-  margin-top: 24px;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f4f4f4;
 }
-.renewal-form-actions button {
-  padding: 8px 20px;
-  font-size: 1rem;
-  border: 1px solid #1976d2;
-  background: #fff;
-  color: #1976d2;
+
+.form-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.form-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.input-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #555;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
   border-radius: 4px;
+  font-size: 1rem;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.button-group {
+  text-align: center;
+}
+
+.submit-button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  font-size: 1rem;
   cursor: pointer;
 }
-.renewal-form-actions button[type="submit"] {
-  background: #1976d2;
-  color: #fff;
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+.message-box {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.message-box.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.message-box.error {
+  background-color: #f8d7da;
+  color: #721c24;
 }
