@@ -4,11 +4,10 @@ const jwt = require('jsonwebtoken');
 const User = require('./models/User');
 const router = express.Router();
 
-// Register
 router.post('/register', async (req, res) => {
   try {
     const { email, username, password } = req.body;
-    if (!email || !password || !username) {
+    if (!email || !username || !password) {
       return res.status(400).json({ message: 'Email, username, and password are required' });
     }
     const existing = await User.findOne({ where: { email } });
@@ -21,7 +20,6 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Login
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;

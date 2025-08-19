@@ -1,42 +1,41 @@
-// AUTHENTICATION MIDDLEWARE DISABLED - NO LOGIN REQUIRED
-
+const express = require('express');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const db = require('../config/database');
+const User = require('../models/User');
+const router = express.Router();
 
-const auth = async (req, res, next) => {
+router.post('/register', async (req, res) => {
   try {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
-    
-    if (!token) {
-      return res.status(401).json({ error: 'Access denied. No token provided.' });
+    const { email, username, password } = req.body;
+    if (!email || !username || !password) {
+      return res.status(400).json({ message: 'Email, username, and password are required' });
     }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const result = await db.query('SELECT id, email, first_name, last_name, role FROM users WHERE id = $1 AND is_active = true', [decoded.userId]);
-    
-    if (result.rows.length === 0) {
-      return res.status(401).json({ error: 'Invalid token.' });
-    }
-
-    req.user = result.rows[0];
-    next();
-  } catch (error) {
-    res.status(401).json({ error: 'Invalid token.' });
+    const existing = await User.findOne({ where: { email } });
+    if (existing) return res.status(400).json({ message: 'Email already exists' });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({ email, username, password: hashedPassword });
+    res.status(201).json({ message: 'User registered successfully', user: { id: user.id, email, username } });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-};
+});
 
-const requireRole = (roles) => {
-  return (req, res, next) => {
-    if (!req.user) {
-      return res.status(401).json({ error: 'Authentication required.' });
-    }
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ where: { email } });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+    const token = jwt.sign(
+      { id: user.id, email: user.email, username: user.username },
+      process.env.JWT_SECRET || 'secretkey',
+      { expiresIn: '1h' }
+    );
+    res.json({ message: 'Login successful', token, user: { id: user.id, email, username: user.username } });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({ error: 'Insufficient permissions.' });
-    }
-
-    next();
-  };
-};
-
- module.exports = { auth, requireRole };
+module.exports = router;

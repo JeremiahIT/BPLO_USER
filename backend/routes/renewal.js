@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const Renewal = require('../models/Renewal');
 const router = express.Router();
 
-// JWT Middleware
 const authMiddleware = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return res.status(401).json({ message: 'No token provided' });
@@ -16,7 +15,6 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-// Submit renewal
 router.post('/', authMiddleware, async (req, res) => {
   try {
     const {
@@ -47,7 +45,6 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
-// Get user's renewals
 router.get('/', authMiddleware, async (req, res) => {
   try {
     const renewals = await Renewal.findAll({ where: { userId: req.user.id } });

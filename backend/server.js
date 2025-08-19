@@ -1,120 +1,54 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
+const sequelize = require('./config/database');
+const User = require('./models/User');
+const Renewal = require('./models/Renewal');
 require('dotenv').config();
-const { setupDatabase } = require('./setup');
-// Routes
-const permitRoutes = require('./routes/permit');
-const renewalRoutes = require('./routes/renewal');
-const zoningRoutes = require('./routes/zoning');
-const solidwasteRoutes = require('./routes/solidwaste');
-const oboRoutes = require('./routes/obo');
-const choRoutes = require('./routes/cho');
-const electricalRoutes = require('./routes/electrical');
-const authRoutes = require('./routes/auth');
 
-const app = express();
-const PORT = process.env.PORT || 5000;
-app.set('trust proxy', 1); // For Render
-
-// Security
-app.use(helmet());
-
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  message: 'Too many requests from this IP, please try again later.',
-});
-app.use('/api/', limiter);
-
-// CORS middleware
-const allowedOrigins = [
-  'http://localhost:3000',
-  'http://localhost:3001',
-  'http://localhost:5173', // Added for frontend
-  'https://bplo-user-1.onrender.com',
-  'https://bplo-user.onrender.com',
-  'https://bplo-user-1-1.onrender.com',
-];
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        console.warn(`❌ CORS blocked: ${origin}`);
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true,
-  })
-);
-
-// Body parser
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// Health check
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development',
-  });
-});
-
-// Routes
-app.use('/api/permits', permitRoutes);
-app.use('/api/renewals', renewalRoutes);
-app.use('/api/zoning', zoningRoutes);
-app.use('/api/solidwaste', solidwasteRoutes);
-app.use('/api/obo', oboRoutes);
-app.use('/api/cho', choRoutes);
-app.use('/api/electrical', electricalRoutes);
-app.use('/api/auth', authRoutes);
-
-// Error handler
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
-    error: 'Something went wrong!',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error',
-  });
-});
-
-// 404 handler
-app.use('*', (req, res) => {
-  res.status(404).json({ error: 'Route not found' });
-});
-
-// Start server
-async function startServer() {
+async function setupDatabase() {
   try {
-    console.log('🔧 Initializing database...');
-    await setupDatabase();
-    console.log('✅ Database initialization complete');
-    app.listen(PORT, () => {
-      console.log(`🚀 BPLO Backend Server running on port ${PORT}`);
-      console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`🔗 Health check: http://localhost:${PORT}/health`);
-    });
+    console.log('🔧 Setting up BPLO database...');
+
+    // Test Sequelize connection
+    await sequelize.authenticate();
+    console.log('✅ Supabase PostgreSQL connection successful');
+
+    // Sync Sequelize models
+    console.log('🔄 Syncing Sequelize models...');
+    await sequelize.sync({ force: false }); // Set to true for testing to drop/recreate tables
+    console.log('✅ Sequelize models (User, Renewal) synced');
+
+    // Display database summary
+    let userCount = 0;
+    let renewalCount = 0;
+
+    try {
+      userCount = await User.count();
+    } catch (error) {
+      console.log('⚠️ Could not count Users table:', error.message);
+    }
+
+    try {
+      renewalCount = await Renewal.count();
+    } catch (error) {
+      console.log('⚠️ Could not count Renewals table:', error.message);
+    }
+
+    console.log('\n📊 Database Summary:');
+    console.log(`   Users: ${userCount}`);
+    console.log(`   Renewals: ${renewalCount}`);
+
+    console.log('\n🎉 Database setup completed successfully!');
+    console.log('🚀 You can now start the server with: npm run dev');
   } catch (error) {
-    console.error('❌ Failed to start server:', error);
-    process.exit(1);
+    console.error('❌ Database setup failed:', error.message);
+    throw error;
   }
 }
-startServer();
 
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received, shutting down gracefully');
-  process.exit(0);
-});
+if (require.main === module) {
+  setupDatabase().catch((err) => {
+    console.error('Setup failed:', err);
+    process.exit(1);
+  });
+}
 
-process.on('SIGINT', () => {
-  console.log('SIGINT received, shutting down gracefully');
-  process.exit(0);
-});
-
-module.exports = app;
+module.exports = { setupDatabase };
