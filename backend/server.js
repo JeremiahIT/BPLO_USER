@@ -31,6 +31,8 @@ app.use(
       }
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 
@@ -41,6 +43,7 @@ app.options('*', cors());
 app.set('trust proxy', 1);
 app.use(helmet());
 
+// Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
@@ -86,7 +89,10 @@ app.use((err, req, res, next) => {
   console.error('❌ Server error:', err.stack);
   res.status(500).json({
     error: 'Something went wrong!',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error',
+    message:
+      process.env.NODE_ENV === 'development'
+        ? err.message
+        : 'Internal server error',
   });
 });
 
@@ -120,7 +126,12 @@ process.on('uncaughtException', (err) => {
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason.stack || reason);
+  console.error(
+    '❌ Unhandled Rejection at:',
+    promise,
+    'reason:',
+    reason.stack || reason
+  );
   process.exit(1);
 });
 
