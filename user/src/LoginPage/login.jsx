@@ -8,10 +8,16 @@ function Login() {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
 
+  // ✅ Auto-switch API (localhost vs Render)
+  const API_BASE =
+    window.location.hostname === 'localhost'
+      ? 'http://localhost:5000/api/auth'
+      : 'https://bplo-user-1.onrender.com/api/auth';
+
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('https://bplo-user-1.onrender.com/api/auth/login', {
+      const response = await fetch(`${API_BASE}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -21,8 +27,8 @@ function Login() {
 
       if (response.ok) {
         setMessage('✅ Login successful!');
-        localStorage.setItem('token', data.token); // Store JWT
-        localStorage.setItem('user', JSON.stringify(data.user)); // Store user info
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
         setTimeout(() => navigate('/dashboard'), 1000);
       } else {
         setMessage(data.message || '❌ Login failed');

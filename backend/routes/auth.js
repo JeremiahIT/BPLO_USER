@@ -2,33 +2,16 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const cors = require('cors');
 
 const router = express.Router();
-
-// ✅ CORS Options
-const corsOptions = {
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://localhost:5173',
-    'https://bplo-user-1.onrender.com',
-    'https://bplo-user.onrender.com',
-    'https://bplo-user-1-1.onrender.com',
-  ],
-  credentials: true,
-};
-
-// Explicitly handle OPTIONS (preflight)
-router.options('/register', cors(corsOptions));
-router.options('/login', cors(corsOptions));
 
 /**
  * ✅ REGISTER
  */
-router.post('/register', cors(corsOptions), async (req, res) => {
+router.post('/register', async (req, res) => {
   try {
     const { email, username, password } = req.body;
+
     if (!email || !username || !password) {
       return res.status(400).json({ message: 'Email, username, and password are required' });
     }
@@ -51,9 +34,10 @@ router.post('/register', cors(corsOptions), async (req, res) => {
 /**
  * ✅ LOGIN
  */
-router.post('/login', cors(corsOptions), async (req, res) => {
+router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+
     const user = await User.findOne({ where: { email } });
     if (!user) return res.status(404).json({ message: 'User not found' });
 

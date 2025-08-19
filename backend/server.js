@@ -19,6 +19,7 @@ const allowedOrigins = [
   'https://bplo-user-1-1.onrender.com',
 ];
 
+// ✅ Global CORS setup
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -35,8 +36,10 @@ app.use(
   })
 );
 
-app.options('*', cors()); // ✅ Preflight
+// ✅ Handle preflight requests
+app.options('*', cors());
 
+// ✅ Security
 app.set('trust proxy', 1);
 app.use(helmet());
 
@@ -58,23 +61,14 @@ app.get('/health', (req, res) => {
 });
 
 // ✅ Routes
-const loadRoute = (path) => {
-  try {
-    return require(path);
-  } catch (err) {
-    console.error(`❌ Failed to load route ${path}:`, err.message);
-    return express.Router();
-  }
-};
-
-app.use('/api/auth', loadRoute('./routes/auth'));
-app.use('/api/permits', loadRoute('./routes/permit'));
-app.use('/api/renewals', loadRoute('./routes/renewal'));
-app.use('/api/zoning', loadRoute('./routes/zoning'));
-app.use('/api/solidwaste', loadRoute('./routes/solidwaste'));
-app.use('/api/obo', loadRoute('./routes/obo'));
-app.use('/api/cho', loadRoute('./routes/cho'));
-app.use('/api/electrical', loadRoute('./routes/electrical'));
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/permits', require('./routes/permit'));
+app.use('/api/renewals', require('./routes/renewal'));
+app.use('/api/zoning', require('./routes/zoning'));
+app.use('/api/solidwaste', require('./routes/solidwaste'));
+app.use('/api/obo', require('./routes/obo'));
+app.use('/api/cho', require('./routes/cho'));
+app.use('/api/electrical', require('./routes/electrical'));
 
 // ✅ Error handler
 app.use((err, req, res, next) => {
