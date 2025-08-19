@@ -1,6 +1,7 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
-const db = require('../config/database');
+const db = require('../config/database'); // This is Sequelize instance
+const BusinessPermit = require('../models/BusinessPermit.js'); // You'll need to create this model
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -31,74 +32,7 @@ const upload = multer({
   }
 });
 
-// -------------------- Routes --------------------
-
-// GET all permits
-router.get('/', async (req, res) => {
-  try {
-    const result = await db.query(
-      `SELECT bp.* FROM business_permits bp ORDER BY bp.created_at DESC`
-    );
-    res.json({ permits: result.rows });
-  } catch (error) {
-    console.error('Get permits error:', error);
-    res.status(500).json({ error: 'Server error', details: error.message });
-  }
-});
-
-// GET all permits with user info
-router.get('/all', async (req, res) => {
-  try {
-    const { status, page = 1, limit = 10 } = req.query;
-    const offset = (page - 1) * limit;
-
-    let query = `
-      SELECT bp.*, u.first_name, u.last_name, u.email
-      FROM business_permits bp
-      LEFT JOIN users u ON bp.user_id = u.id
-    `;
-    const params = [];
-    if (status) {
-      query += ' WHERE bp.status = $1';
-      params.push(status);
-    }
-    query += ` ORDER BY bp.created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
-    params.push(limit, offset);
-
-    const result = await db.query(query, params);
-    res.json({ permits: result.rows });
-  } catch (error) {
-    console.error('Get all permits error:', error);
-    res.status(500).json({ error: 'Server error', details: error.message });
-  }
-});
-
-// GET single permit by ID
-router.get('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const permitResult = await db.query(`SELECT * FROM business_permits WHERE id = $1`, [id]);
-    if (permitResult.rows.length === 0) {
-      return res.status(404).json({ error: 'Permit not found' });
-    }
-    const permit = permitResult.rows[0];
-
-    // Get requirements
-    const requirementsResult = await db.query(
-      `SELECT pr.*, r.name as requirement_name, r.description as requirement_description
-       FROM permit_requirements pr
-       JOIN requirements r ON pr.requirement_id = r.id
-       WHERE pr.permit_id = $1`, [id]
-    );
-
-    res.json({ permit: { ...permit, requirements: requirementsResult.rows } });
-  } catch (error) {
-    console.error('Get permit error:', error);
-    res.status(500).json({ error: 'Server error', details: error.message });
-  }
-});
-
-// -------------------- Create new permit --------------------
+// -------------------- Create new permit (Using Sequelize) --------------------
 router.post('/', 
   upload.fields([
     { name: 'dtiCertificate', maxCount: 1 }, 
@@ -157,44 +91,37 @@ router.post('/',
       // Generate permit number
       const permitNumber = `BPLO-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
-      console.log('Inserting into database with permit number:', permitNumber);
+      console.log('Creating permit with number:', permitNumber);
 
-      const result = await db.query(
-        `INSERT INTO business_permits (
-          permit_number, business_type, registration_number, business_name,
-          tax_identification_number, trade_name, owner_first_name, owner_middle_name,
-          owner_last_name, owner_extension_name, owner_sex, mail_address, telephone,
-          mobile, email, dti_certificate, sec_certificate, cda_certificate, bir_certificate
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
-        RETURNING *`,
-        [
-          permitNumber, 
-          business_type, 
-          registration_number || null, 
-          business_name,
-          tax_identification_number || null, 
-          trade_name || null, 
-          owner_first_name,
-          owner_middle_name || null,
-          owner_last_name,
-          owner_extension_name || null, 
-          owner_sex || null, 
-          mail_address,
-          telephone || null,
-          mobile,
-          email, 
-          dtiCertificate, 
-          secCertificate, 
-          cdaCertificate, 
-          birCertificate
-        ]
-      );
+      // Using Sequelize to create the record
+      const permit = await db.models.BusinessPermit.create({
+        permit_number: permitNumber,
+        business_type,
+        registration_number: registration_number || null,
+        business_name,
+        tax_identification_number: tax_identification_number || null,
+        trade_name: trade_name || null,
+        owner_first_name,
+        owner_middle_name: owner_middle_name || null,
+        owner_last_name,
+        owner_extension_name: owner_extension_name || null,
+        owner_sex: owner_sex || null,
+        mail_address,
+        telephone: telephone || null,
+        mobile,
+        email,
+        dti_certificate: dtiCertificate,
+        sec_certificate: secCertificate,
+        cda_certificate: cdaCertificate,
+        bir_certificate: birCertificate,
+        status: 'pending'
+      });
 
-      console.log('Permit created successfully:', result.rows[0]);
+      console.log('Permit created successfully:', permit.toJSON());
 
       res.status(201).json({ 
         message: 'Permit created successfully', 
-        permit: result.rows[0] 
+        permit: permit.toJSON()
       });
 
     } catch (error) {
@@ -205,42 +132,6 @@ router.post('/',
         stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
       });
     }
-});
-
-// -------------------- Update permit status --------------------
-router.patch('/:id/status', [
-  body('status').isIn(['pending', 'under_review', 'approved', 'rejected', 'requires_changes']),
-  body('notes').optional()
-], async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const { id } = req.params;
-    const { status, notes } = req.body;
-
-    const result = await db.query(
-      'UPDATE business_permits SET status=$1, notes=$2, updated_at=CURRENT_TIMESTAMP WHERE id=$3 RETURNING *',
-      [status, notes || null, id]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Permit not found' });
-    }
-
-    res.json({ 
-      message: 'Permit status updated successfully',
-      permit: result.rows[0]
-    });
-  } catch (error) {
-    console.error('Update permit status error:', error);
-    res.status(500).json({ 
-      error: 'Server error updating status', 
-      details: error.message 
-    });
-  }
 });
 
 module.exports = router;
