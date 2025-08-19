@@ -5,7 +5,7 @@ import './registration.css';
 function Registration() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
-  const [username, setUsername] = useState(''); // Added username
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -17,7 +17,9 @@ function Registration() {
       return;
     }
     try {
-      const response = await fetch('http://localhost:5000/api/auth/register', { // Fixed port
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://bplo-user-1.onrender.com';
+      console.log('Sending request to:', `${backendUrl}/api/auth/register`); // Debug log
+      const response = await fetch(`${backendUrl}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, username, password }),
@@ -25,12 +27,13 @@ function Registration() {
       const data = await response.json();
       if (response.ok) {
         setMessage('✅ Registration successful! Please log in.');
-        setTimeout(() => navigate('/'), 2000); // Redirect to login
+        setTimeout(() => navigate('/'), 2000);
       } else {
         setMessage(data.message || 'Registration failed');
       }
     } catch (err) {
-      setMessage('Error: ' + err.message);
+      console.error('Registration error:', err); // Debug log
+      setMessage(`Error: ${err.message}. Please check if the backend is running.`);
     }
   };
 
