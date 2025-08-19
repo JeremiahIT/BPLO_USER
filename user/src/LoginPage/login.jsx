@@ -11,21 +11,24 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', { // Fixed port
+      const response = await fetch('https://bplo-user-1.onrender.com/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
+
       const data = await response.json();
+
       if (response.ok) {
         setMessage('✅ Login successful!');
         localStorage.setItem('token', data.token); // Store JWT
-        setTimeout(() => navigate('/dashboard'), 2000); // Redirect to dashboard
+        localStorage.setItem('user', JSON.stringify(data.user)); // Store user info
+        setTimeout(() => navigate('/dashboard'), 1000);
       } else {
-        setMessage(data.message || 'Login failed');
+        setMessage(data.message || '❌ Login failed');
       }
     } catch (err) {
-      setMessage('Error: ' + err.message);
+      setMessage('⚠️ Error: ' + err.message);
     }
   };
 
@@ -36,49 +39,39 @@ function Login() {
         <h2 className="form-title">Log In</h2>
         <form onSubmit={handleLogin}>
           <div className="input-group">
-            <label className="form-label" htmlFor="email">Email</label>
+            <label htmlFor="email" className="form-label">Email</label>
             <input
-              className="form-input"
               id="email"
               type="email"
-              placeholder="Your email address"
+              className="form-input"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              placeholder="Your email address"
               required
             />
           </div>
           <div className="input-group">
-            <label className="form-label" htmlFor="password">Password</label>
+            <label htmlFor="password" className="form-label">Password</label>
             <input
-              className="form-input"
               id="password"
               type="password"
-              placeholder="******************"
+              className="form-input"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              placeholder="******************"
               required
             />
           </div>
           <div className="button-group">
-            <button className="submit-button primary" type="submit">Sign In</button>
+            <button type="submit" className="submit-button primary">Sign In</button>
             <button
-              className="text-button"
               type="button"
-              onClick={() => navigate('/forgotpassword')}
-            >
-              Forgot Password?
-            </button>
-          </div>
-          <p className="link-text">
-            Don't have an account?{' '}
-            <button
               className="text-button"
-              type="button"
               onClick={() => navigate('/registration')}
             >
               Register
             </button>
-          </p>
+          </div>
         </form>
       </div>
     </div>
