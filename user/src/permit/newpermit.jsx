@@ -136,7 +136,7 @@ const NewPermit = () => {
 
   return (
     <div className="permit-container">
-      <button className="back-btn" onClick={() => navigate("/")}>
+      <button className="back-btn" onClick={() => navigate("/dashboard")}>
         &larr; Back
       </button>
       <form className="permit-form" onSubmit={handleSubmit}>
