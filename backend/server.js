@@ -3,24 +3,13 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config();
+
 const { setupDatabase } = require('./setup');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-app.set('trust proxy', 1);
 
-// Security middleware
-app.use(helmet());
-
-// Rate limiter for all /api routes
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  message: 'Too many requests from this IP, please try again later.',
-});
-app.use('/api/', limiter);
-
-// ✅ Allowed origins for CORS
+// ✅ Allowed frontend URLs
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
@@ -30,7 +19,7 @@ const allowedOrigins = [
   'https://bplo-user-1-1.onrender.com',
 ];
 
-// ✅ CORS setup
+// ✅ Apply CORS at the very top
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -45,14 +34,25 @@ app.use(
   })
 );
 
-// ✅ Handle preflight requests (important for POST/PUT/DELETE)
+// ✅ Explicitly handle preflight requests
 app.options('*', cors());
 
-// Parse JSON and URL-encoded data
+// Security middlewares
+app.set('trust proxy', 1);
+app.use(helmet());
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: 'Too many requests from this IP, please try again later.',
+});
+app.use('/api/', limiter);
+
+// Body parsers
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Health check route
+// Health check
 app.get('/health', (req, res) => {
   res.json({
     status: 'OK',
@@ -61,17 +61,17 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Utility to safely load routes
+// Safely import routes
 const loadRoute = (path) => {
   try {
     return require(path);
   } catch (err) {
     console.error(`❌ Failed to load route ${path}:`, err.message);
-    return express.Router(); // fallback
+    return express.Router(); // Fallback to prevent crash
   }
 };
 
-// API routes
+// Routes
 app.use('/api/permits', loadRoute('./routes/permit'));
 app.use('/api/renewals', loadRoute('./routes/renewal'));
 app.use('/api/zoning', loadRoute('./routes/zoning'));
@@ -81,7 +81,7 @@ app.use('/api/cho', loadRoute('./routes/cho'));
 app.use('/api/electrical', loadRoute('./routes/electrical'));
 app.use('/api/auth', loadRoute('./routes/auth'));
 
-// Error handler
+// Global error handler
 app.use((err, req, res, next) => {
   console.error('❌ Server error:', err.stack);
   res.status(500).json({
@@ -101,6 +101,7 @@ async function startServer() {
     console.log('🔧 Initializing database...');
     await setupDatabase();
     console.log('✅ Database initialization complete');
+
     app.listen(PORT, () => {
       console.log(`🚀 BPLO Backend Server running on port ${PORT}`);
       console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
@@ -112,7 +113,7 @@ async function startServer() {
   }
 }
 
-// Handle uncaught exceptions and rejections
+// Handle uncaught exceptions
 process.on('uncaughtException', (err) => {
   console.error('❌ Uncaught Exception:', err.stack);
   process.exit(1);
@@ -125,6 +126,7 @@ process.on('unhandledRejection', (reason, promise) => {
 
 startServer();
 
+// Graceful shutdown
 process.on('SIGTERM', () => {
   console.log('SIGTERM received, shutting down gracefully');
   process.exit(0);
