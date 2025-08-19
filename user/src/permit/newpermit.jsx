@@ -70,13 +70,14 @@ const NewPermit = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setMessage({ text: "", type: "" });
 
     try {
       const formData = new FormData();
 
       // Map frontend form fields to backend expected fields
       formData.append("business_type", form.businessType);
-      formData.append("registration_number", form.businessAddress); 
+      formData.append("registration_number", form.businessAddress);
       formData.append("business_name", form.businessName);
       formData.append("tax_identification_number", form.tin);
       formData.append("trade_name", form.natureOfBusiness);
@@ -85,27 +86,40 @@ const NewPermit = () => {
       formData.append("owner_last_name", form.lastName);
       formData.append("owner_sex", form.gender);
       formData.append("mail_address", form.mailAddress);
-      formData.append("telephone", ""); // optional, empty
+      formData.append("telephone", "");
       formData.append("mobile", form.mobile);
       formData.append("email", form.email);
 
+      // Append files if they exist
       if (form.dtiCertificate) formData.append("dtiCertificate", form.dtiCertificate);
       if (form.secCertificate) formData.append("secCertificate", form.secCertificate);
       if (form.cdaCertificate) formData.append("cdaCertificate", form.cdaCertificate);
       if (form.birCertificate) formData.append("birCertificate", form.birCertificate);
+
+      // Debug: Log form data
+      console.log("Submitting form data:");
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
 
       const response = await fetch("https://bplo-user.onrender.com/api/permits", {
         method: "POST",
         body: formData,
       });
 
-      if (!response.ok) throw new Error("Failed to submit application");
+      // Get detailed error information
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error("Server error response:", errorData);
+        throw new Error(`Failed to submit application: ${response.status} ${response.statusText}`);
+      }
 
       const data = await response.json();
       console.log("Success:", data);
 
       setMessage({ text: "Application submitted successfully!", type: "success" });
 
+      // Reset form
       setForm({
         businessName: "",
         businessAddress: "",
@@ -126,8 +140,11 @@ const NewPermit = () => {
       });
 
     } catch (err) {
-      console.error(err);
-      setMessage({ text: `Error: ${err.message}`, type: "error" });
+      console.error("Submission error:", err);
+      setMessage({ 
+        text: `Error: ${err.message || "Failed to submit application"}`,
+        type: "error" 
+      });
     } finally {
       setLoading(false);
       setTimeout(() => setMessage({ text: "", type: "" }), 5000);
@@ -181,19 +198,19 @@ const NewPermit = () => {
           <div className="grid files">
             <div>
               <label>DTI Certificate</label>
-              <input type="file" name="dtiCertificate" onChange={handleFileChange} />
+              <input type="file" name="dtiCertificate" onChange={handleFileChange} accept=".pdf,.jpg,.jpeg,.png" />
             </div>
             <div>
               <label>SEC Certificate</label>
-              <input type="file" name="secCertificate" onChange={handleFileChange} />
+              <input type="file" name="secCertificate" onChange={handleFileChange} accept=".pdf,.jpg,.jpeg,.png" />
             </div>
             <div>
               <label>CDA Certificate</label>
-              <input type="file" name="cdaCertificate" onChange={handleFileChange} />
+              <input type="file" name="cdaCertificate" onChange={handleFileChange} accept=".pdf,.jpg,.jpeg,.png" />
             </div>
             <div>
               <label>BIR Certificate</label>
-              <input type="file" name="birCertificate" onChange={handleFileChange} />
+              <input type="file" name="birCertificate" onChange={handleFileChange} accept=".pdf,.jpg,.jpeg,.png" />
             </div>
           </div>
         </fieldset>
@@ -221,6 +238,10 @@ const NewPermit = () => {
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
               </select>
+            </div>
+            <div>
+              <label>Mailing Address <span>*</span></label>
+              <input type="text" name="mailAddress" value={form.mailAddress} onChange={handleChange} required />
             </div>
             <div>
               <label>Email <span>*</span></label>

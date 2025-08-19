@@ -1,21 +1,35 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const db = require('../config/database');
-const multer = require('multer'); // For file uploads
+const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const router = express.Router();
+
+// -------------------- Ensure uploads directory exists --------------------
+const uploadDir = 'uploads/';
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+  console.log('Created uploads directory');
+}
 
 // -------------------- Multer setup --------------------
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/'); // Make sure this folder exists
+    cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     cb(null, uniqueSuffix + path.extname(file.originalname));
   }
 });
-const upload = multer({ storage });
+
+const upload = multer({ 
+  storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  }
+});
 
 // -------------------- Routes --------------------
 
@@ -28,7 +42,7 @@ router.get('/', async (req, res) => {
     res.json({ permits: result.rows });
   } catch (error) {
     console.error('Get permits error:', error);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: 'Server error', details: error.message });
   }
 });
 
@@ -55,7 +69,7 @@ router.get('/all', async (req, res) => {
     res.json({ permits: result.rows });
   } catch (error) {
     console.error('Get all permits error:', error);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: 'Server error', details: error.message });
   }
 });
 
@@ -80,31 +94,41 @@ router.get('/:id', async (req, res) => {
     res.json({ permit: { ...permit, requirements: requirementsResult.rows } });
   } catch (error) {
     console.error('Get permit error:', error);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: 'Server error', details: error.message });
   }
 });
 
 // -------------------- Create new permit --------------------
-// Using multer to handle optional file uploads
 router.post('/', 
   upload.fields([
-    { name: 'dtiCertificate' }, 
-    { name: 'secCertificate' }, 
-    { name: 'cdaCertificate' }, 
-    { name: 'birCertificate' }
+    { name: 'dtiCertificate', maxCount: 1 }, 
+    { name: 'secCertificate', maxCount: 1 }, 
+    { name: 'cdaCertificate', maxCount: 1 }, 
+    { name: 'birCertificate', maxCount: 1 }
   ]),
   [
-    body('business_type').notEmpty(),
-    body('business_name').notEmpty(),
-    body('owner_first_name').notEmpty(),
-    body('owner_last_name').notEmpty(),
+    body('business_type').notEmpty().withMessage('Business type is required'),
+    body('business_name').notEmpty().withMessage('Business name is required'),
+    body('owner_first_name').notEmpty().withMessage('Owner first name is required'),
+    body('owner_last_name').notEmpty().withMessage('Owner last name is required'),
     body('email').isEmail().withMessage('Invalid email format'),
-    body('mobile').matches(/^\+639\d{9}$/).withMessage('Invalid Philippine mobile number')
+    body('mobile').matches(/^\+639\d{9}$/).withMessage('Invalid Philippine mobile number format (+639XXXXXXXXX)'),
+    body('mail_address').notEmpty().withMessage('Mailing address is required')
   ],
   async (req, res) => {
     try {
+      console.log('Received permit creation request');
+      console.log('Body:', req.body);
+      console.log('Files:', req.files);
+
       const errors = validationResult(req);
-      if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+      if (!errors.isEmpty()) {
+        console.log('Validation errors:', errors.array());
+        return res.status(400).json({ 
+          error: 'Validation failed', 
+          details: errors.array() 
+        });
+      }
 
       const {
         business_type,
@@ -133,26 +157,53 @@ router.post('/',
       // Generate permit number
       const permitNumber = `BPLO-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
+      console.log('Inserting into database with permit number:', permitNumber);
+
       const result = await db.query(
         `INSERT INTO business_permits (
           permit_number, business_type, registration_number, business_name,
           tax_identification_number, trade_name, owner_first_name, owner_middle_name,
           owner_last_name, owner_extension_name, owner_sex, mail_address, telephone,
           mobile, email, dti_certificate, sec_certificate, cda_certificate, bir_certificate
-        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
         RETURNING *`,
         [
-          permitNumber, business_type, registration_number, business_name,
-          tax_identification_number, trade_name, owner_first_name, owner_middle_name,
-          owner_last_name, owner_extension_name, owner_sex, mail_address, telephone,
-          mobile, email, dtiCertificate, secCertificate, cdaCertificate, birCertificate
+          permitNumber, 
+          business_type, 
+          registration_number || null, 
+          business_name,
+          tax_identification_number || null, 
+          trade_name || null, 
+          owner_first_name,
+          owner_middle_name || null,
+          owner_last_name,
+          owner_extension_name || null, 
+          owner_sex || null, 
+          mail_address,
+          telephone || null,
+          mobile,
+          email, 
+          dtiCertificate, 
+          secCertificate, 
+          cdaCertificate, 
+          birCertificate
         ]
       );
 
-      res.status(201).json({ message: 'Permit created successfully', permit: result.rows[0] });
+      console.log('Permit created successfully:', result.rows[0]);
+
+      res.status(201).json({ 
+        message: 'Permit created successfully', 
+        permit: result.rows[0] 
+      });
+
     } catch (error) {
-      console.error('Create permit error:', error);
-      res.status(500).json({ error: 'Server error' });
+      console.error('Create permit error details:', error);
+      res.status(500).json({ 
+        error: 'Server error creating permit', 
+        details: error.message,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      });
     }
 });
 
@@ -163,20 +214,32 @@ router.patch('/:id/status', [
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
     const { id } = req.params;
     const { status, notes } = req.body;
 
-    await db.query(
-      'UPDATE business_permits SET status=$1, notes=$2, updated_at=CURRENT_TIMESTAMP WHERE id=$3',
+    const result = await db.query(
+      'UPDATE business_permits SET status=$1, notes=$2, updated_at=CURRENT_TIMESTAMP WHERE id=$3 RETURNING *',
       [status, notes || null, id]
     );
 
-    res.json({ message: 'Permit status updated successfully' });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Permit not found' });
+    }
+
+    res.json({ 
+      message: 'Permit status updated successfully',
+      permit: result.rows[0]
+    });
   } catch (error) {
     console.error('Update permit status error:', error);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ 
+      error: 'Server error updating status', 
+      details: error.message 
+    });
   }
 });
 

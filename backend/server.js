@@ -55,9 +55,24 @@ app.use('/api/', limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// ✅ Serve uploaded files
+app.use('/uploads', express.static('uploads'));
+
 // ✅ Health check
 app.get('/health', (req, res) => {
-  res.json({ status: 'OK', time: new Date().toISOString() });
+  res.json({ 
+    status: 'OK', 
+    time: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
+// ✅ Database connection check middleware
+app.use('/api/permits', (req, res, next) => {
+  if (!db) {
+    return res.status(500).json({ error: 'Database not connected' });
+  }
+  next();
 });
 
 // ✅ Routes
@@ -73,12 +88,20 @@ app.use('/api/electrical', require('./routes/electrical'));
 // ✅ Error handler
 app.use((err, req, res, next) => {
   console.error('❌ Server error:', err.stack);
-  res.status(500).json({ error: 'Internal server error' });
+  res.status(500).json({ 
+    error: 'Internal server error',
+    message: err.message,
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+  });
 });
 
 // ✅ 404 handler
 app.use('*', (req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+  res.status(404).json({ 
+    error: 'Route not found',
+    path: req.originalUrl,
+    method: req.method
+  });
 });
 
 // ✅ Start server
@@ -90,6 +113,8 @@ async function startServer() {
 
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`📁 Upload directory: ./uploads/`);
     });
   } catch (err) {
     console.error('❌ Failed to start server:', err.message);
