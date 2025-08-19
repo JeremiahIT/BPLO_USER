@@ -1,59 +1,61 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './newpermit.css';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./newpermit.css";
 
-// Constants for form options
 const BUSINESS_TYPES = [
-  'Sole Proprietor',
-  'Partnership',
-  'Corporation',
-  'Cooperative',
+  "Sole Proprietor",
+  "Partnership",
+  "Corporation",
+  "Cooperative",
 ];
 
 const NewPermit = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState({ text: '', type: '' });
+  const [message, setMessage] = useState({ text: "", type: "" });
+
   const [form, setForm] = useState({
-    // Section 1: Business Information
-    businessName: '',
-    businessAddress: '',
-    businessType: '',
-    natureOfBusiness: '',
-    tin: '',
-    
-    // Section 2: Core Documents (File inputs)
+    businessName: "",
+    businessAddress: "",
+    businessType: "",
+    natureOfBusiness: "",
+    tin: "",
     dtiCertificate: null,
     secCertificate: null,
     cdaCertificate: null,
     birCertificate: null,
-    
-    // Section 3: Contact Information
-    firstName: '',
-    middleName: '',
-    lastName: '',
-    gender: '',
-    mailAddress: '',
-    mobile: '',
-    email: '',
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    gender: "",
+    mailAddress: "",
+    mobile: "+63",
+    email: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     let formattedValue = value;
 
-    // Remove non-digits from TIN input for formatting
-    if (name === 'tin') {
-      const numericValue = value.replace(/\D/g, '');
-      if (numericValue.length > 3 && numericValue.length <= 6) {
-        formattedValue = `${numericValue.slice(0, 3)}-${numericValue.slice(3)}`;
-      } else if (numericValue.length > 6 && numericValue.length <= 9) {
-        formattedValue = `${numericValue.slice(0, 3)}-${numericValue.slice(3, 6)}-${numericValue.slice(6)}`;
-      } else if (numericValue.length > 9) {
-        formattedValue = `${numericValue.slice(0, 3)}-${numericValue.slice(3, 6)}-${numericValue.slice(6, 9)}-${numericValue.slice(9, 12)}`;
+    // Format TIN (000-00-0000)
+    if (name === "tin") {
+      const numeric = value.replace(/\D/g, "");
+      if (numeric.length > 5) {
+        formattedValue = `${numeric.slice(0,3)}-${numeric.slice(3,5)}-${numeric.slice(5,9)}`;
+      } else if (numeric.length > 3) {
+        formattedValue = `${numeric.slice(0,3)}-${numeric.slice(3)}`;
       } else {
-        formattedValue = numericValue;
+        formattedValue = numeric;
       }
+    }
+
+    // Format Mobile Number (+639XXXXXXXXX)
+    if (name === "mobile") {
+      let numeric = value.replace(/\D/g, ""); // only digits
+      if (numeric.startsWith("63")) numeric = numeric.slice(2); 
+      else if (numeric.startsWith("0")) numeric = numeric.slice(1); 
+      if (numeric.length > 10) numeric = numeric.slice(0, 10); // limit to 10 digits
+      formattedValue = "+63" + numeric;
     }
 
     setForm((prev) => ({ ...prev, [name]: formattedValue }));
@@ -61,108 +63,122 @@ const NewPermit = () => {
 
   const handleFileChange = (e) => {
     const { name, files } = e.target;
-    if (files.length > 0) {
+    if (files.length > 0)
       setForm((prev) => ({ ...prev, [name]: files[0] }));
-    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    const formData = new FormData();
-    for (const key in form) {
-      if (form[key] !== null) {
-        formData.append(key, form[key]);
-      }
-    }
-
     try {
-      console.log('Form data submitted:', form);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500)); 
+      const formData = new FormData();
 
-      setMessage({ text: 'Application submitted successfully!', type: 'success' });
-      setForm({
-        businessName: '', businessAddress: '', businessType: '', natureOfBusiness: '', tin: '',
-        dtiCertificate: null, secCertificate: null, cdaCertificate: null, birCertificate: null,
-        firstName: '', middleName: '', lastName: '', gender: '',
-        mailAddress: '', mobile: '', email: '',
+      // Map frontend form fields to backend expected fields
+      formData.append("business_type", form.businessType);
+      formData.append("registration_number", form.businessAddress); 
+      formData.append("business_name", form.businessName);
+      formData.append("tax_identification_number", form.tin);
+      formData.append("trade_name", form.natureOfBusiness);
+      formData.append("owner_first_name", form.firstName);
+      formData.append("owner_middle_name", form.middleName);
+      formData.append("owner_last_name", form.lastName);
+      formData.append("owner_sex", form.gender);
+      formData.append("mail_address", form.mailAddress);
+      formData.append("telephone", ""); // optional, empty
+      formData.append("mobile", form.mobile);
+      formData.append("email", form.email);
+
+      if (form.dtiCertificate) formData.append("dtiCertificate", form.dtiCertificate);
+      if (form.secCertificate) formData.append("secCertificate", form.secCertificate);
+      if (form.cdaCertificate) formData.append("cdaCertificate", form.cdaCertificate);
+      if (form.birCertificate) formData.append("birCertificate", form.birCertificate);
+
+      const response = await fetch("https://bplo-user.onrender.com/api/permits", {
+        method: "POST",
+        body: formData,
       });
-      // In a real application, you would navigate after a successful submission
-      // navigate('/dashboard');
-    } catch (error) {
-      console.error('Submit error:', error);
-      setMessage({ text: `Error submitting application: ${error.message}`, type: 'error' });
+
+      if (!response.ok) throw new Error("Failed to submit application");
+
+      const data = await response.json();
+      console.log("Success:", data);
+
+      setMessage({ text: "Application submitted successfully!", type: "success" });
+
+      setForm({
+        businessName: "",
+        businessAddress: "",
+        businessType: "",
+        natureOfBusiness: "",
+        tin: "",
+        dtiCertificate: null,
+        secCertificate: null,
+        cdaCertificate: null,
+        birCertificate: null,
+        firstName: "",
+        middleName: "",
+        lastName: "",
+        gender: "",
+        mailAddress: "",
+        mobile: "+63",
+        email: "",
+      });
+
+    } catch (err) {
+      console.error(err);
+      setMessage({ text: `Error: ${err.message}`, type: "error" });
     } finally {
       setLoading(false);
-      setTimeout(() => setMessage({ text: '', type: '' }), 5000); // Clear message after 5 seconds
+      setTimeout(() => setMessage({ text: "", type: "" }), 5000);
     }
   };
 
   return (
-    <div className="new-permit-container">
-      <button
-        type="button"
-        className="back-dashboard-btn"
-        onClick={() => navigate('/')}
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>
+    <div className="permit-container">
+      <button className="back-btn" onClick={() => navigate("/")}>
+        &larr; Back
       </button>
-      <form onSubmit={handleSubmit}>
+      <form className="permit-form" onSubmit={handleSubmit}>
         <h1 className="form-title">New Business Permit Application</h1>
-        
         {message.text && (
-          <div className={`message-box ${message.type}`}>
-            {message.text}
-          </div>
+          <div className={`message-box ${message.type}`}>{message.text}</div>
         )}
 
-        {/* Section 1: Business Information */}
-        <div className="form-section">
-          <div className="section-title">Business Information</div>
-          <div className="form-row">
+        {/* Business Information */}
+        <fieldset>
+          <legend>Business Information</legend>
+          <div className="grid">
             <div>
-              <label>Business Name <span className="required">*</span></label>
-              <input type="text" name="businessName" value={form.businessName} onChange={handleChange} required autoComplete="organization" />
+              <label>Business Name <span>*</span></label>
+              <input type="text" name="businessName" value={form.businessName} onChange={handleChange} required />
             </div>
             <div>
-              <label>Business Address <span className="required">*</span></label>
-              <input type="text" name="businessAddress" value={form.businessAddress} onChange={handleChange} required autoComplete="street-address" />
+              <label>Business Address <span>*</span></label>
+              <input type="text" name="businessAddress" value={form.businessAddress} onChange={handleChange} required />
             </div>
             <div>
-              <label>Business Type <span className="required">*</span></label>
+              <label>Business Type <span>*</span></label>
               <select name="businessType" value={form.businessType} onChange={handleChange} required>
                 <option value="">Select Type</option>
-                {BUSINESS_TYPES.map((type) => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
+                {BUSINESS_TYPES.map((type) => <option key={type} value={type}>{type}</option>)}
               </select>
             </div>
             <div>
-              <label>Nature of Business / Industry <span className="required">*</span></label>
+              <label>Nature of Business <span>*</span></label>
               <input type="text" name="natureOfBusiness" value={form.natureOfBusiness} onChange={handleChange} required />
             </div>
             <div>
-              <label>Tax Identification No. (TIN)</label>
-              <input 
-                type="text" 
-                name="tin" 
-                value={form.tin} 
-                onChange={handleChange} 
-                placeholder="000-00-000-000"
-                pattern="\d{3}-\d{2}-\d{3}-\d{3}" 
-                title="TIN must be in the format 000-00-000-000"
-                autoComplete="off"
-              />
+              <label>TIN</label>
+              <input type="text" name="tin" value={form.tin} onChange={handleChange} placeholder="000-00-0000" pattern="\d{3}-\d{2}-\d{4}" />
             </div>
           </div>
-        </div>
+        </fieldset>
 
-        {/* Section 2: Core Documents */}
-        <div className="form-section">
-          <div className="section-title">Core Documents</div>
-          <div className="form-row file-upload-row">
+        {/* Core Documents */}
+        <fieldset>
+          <legend>Core Documents</legend>
+          <div className="grid files">
             <div>
               <label>DTI Certificate</label>
               <input type="file" name="dtiCertificate" onChange={handleFileChange} />
@@ -176,67 +192,55 @@ const NewPermit = () => {
               <input type="file" name="cdaCertificate" onChange={handleFileChange} />
             </div>
             <div>
-              <label>BIR Certificate of Registration (Form 2303)</label>
+              <label>BIR Certificate</label>
               <input type="file" name="birCertificate" onChange={handleFileChange} />
             </div>
           </div>
-        </div>
-        
-        {/* Section 3: Contact Information */}
-        <div className="form-section">
-          <div className="section-title">Contact Information</div>
-          <div className="form-row">
+        </fieldset>
+
+        {/* Contact Information */}
+        <fieldset>
+          <legend>Contact Information</legend>
+          <div className="grid">
             <div>
-              <label>First Name</label>
-              <input type="text" name="firstName" value={form.firstName} onChange={handleChange} autoComplete="given-name" />
-              </div>
-              <div>
-                <label>Middle Name</label>
-                <input type="text" name="middleName" value={form.middleName} onChange={handleChange} autoComplete="additional-name" />
-              </div>
-              <div>
-                <label>Last Name</label>
-                <input type="text" name="lastName" value={form.lastName} onChange={handleChange} autoComplete="family-name" />
-              </div>
-              <div>
-                <label>Gender</label>
-                <select name="gender" value={form.gender} onChange={handleChange}>
-                  <option value="">Select</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                </select>
-              </div>
+              <label>First Name <span>*</span></label>
+              <input type="text" name="firstName" value={form.firstName} onChange={handleChange} required />
             </div>
-            <div className="form-row">
-              <div>
-                <label>Email Address <span className="required">*</span></label>
-                <input type="email" name="email" value={form.email} onChange={handleChange} required autoComplete="email" />
-              </div>
-              <div>
-                <label>Mobile Number <span className="required">*</span></label>
-                <input 
-                  type="tel" 
-                  name="mobile" 
-                  value={form.mobile} 
-                  onChange={handleChange} 
-                  required 
-                  pattern="^\+639\d{9}$" 
-                  placeholder="+63 9xx xxx xxxx"
-                  title="Philippine mobile number format (+63 9xx xxx xxxx)"
-                  autoComplete="tel" 
-                />
-              </div>
+            <div>
+              <label>Middle Name</label>
+              <input type="text" name="middleName" value={form.middleName} onChange={handleChange} />
+            </div>
+            <div>
+              <label>Last Name <span>*</span></label>
+              <input type="text" name="lastName" value={form.lastName} onChange={handleChange} required />
+            </div>
+            <div>
+              <label>Gender</label>
+              <select name="gender" value={form.gender} onChange={handleChange}>
+                <option value="">Select</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
+            <div>
+              <label>Email <span>*</span></label>
+              <input type="email" name="email" value={form.email} onChange={handleChange} required />
+            </div>
+            <div>
+              <label>Mobile <span>*</span></label>
+              <input type="tel" name="mobile" value={form.mobile} onChange={handleChange} required placeholder="+639XXXXXXXXX" pattern="^\+639\d{9}$" />
             </div>
           </div>
-          
-          <div className="button-container">
-            <button type="submit" disabled={loading}>
-              {loading ? 'Submitting...' : 'Submit Application'}
-            </button>
-          </div>
-        </form>
-      </div>
-    );
+        </fieldset>
+
+        <div className="submit-btn">
+          <button type="submit" disabled={loading}>
+            {loading ? "Submitting..." : "Submit Application"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
 };
 
 export default NewPermit;
