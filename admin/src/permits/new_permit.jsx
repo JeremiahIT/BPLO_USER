@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./new_permit.css";
-import { buildApiUrl } from "../config/api";
+import { buildApiUrl, buildFileUrl } from "../config/api";
 
 export default function NewPermitAdmin() {
   const navigate = useNavigate();
@@ -27,12 +27,6 @@ export default function NewPermitAdmin() {
     fetchPermits();
   }, []);
 
-  const fileUrl = (path) => {
-    if (!path) return null;
-    // Ensure your backend serves /uploads as static (app.use("/uploads", express.static("uploads")))
-    return buildApiUrl("/" + path.replace(/\\/g, "/"));
-  };
-
   return (
     <div className="permit-container">
       <button className="back-btn" onClick={() => navigate("/dashboard")}>
@@ -54,7 +48,11 @@ export default function NewPermitAdmin() {
             <p><strong>Business Type:</strong> {permit.business_type}</p>
             <p><strong>Nature of Business:</strong> {permit.trade_name}</p>
             <p><strong>TIN:</strong> {permit.tax_identification_number}</p>
-            <p><strong>Owner:</strong> {permit.owner_first_name} {permit.owner_middle_name || ""} {permit.owner_last_name}</p>
+            <p>
+              <strong>Owner:</strong>{" "}
+              {permit.owner_first_name} {permit.owner_middle_name || ""}{" "}
+              {permit.owner_last_name}
+            </p>
             <p><strong>Gender:</strong> {permit.owner_sex}</p>
             <p><strong>Mail Address:</strong> {permit.mail_address}</p>
             <p><strong>Email:</strong> {permit.email}</p>
@@ -63,22 +61,38 @@ export default function NewPermitAdmin() {
             {/* File links */}
             <div className="files">
               {permit.dti_certificate && (
-                <a href={fileUrl(permit.dti_certificate)} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={buildFileUrl(permit.dti_certificate)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   View DTI Certificate
                 </a>
               )}
               {permit.sec_certificate && (
-                <a href={fileUrl(permit.sec_certificate)} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={buildFileUrl(permit.sec_certificate)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   View SEC Certificate
                 </a>
               )}
               {permit.cda_certificate && (
-                <a href={fileUrl(permit.cda_certificate)} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={buildFileUrl(permit.cda_certificate)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   View CDA Certificate
                 </a>
               )}
               {permit.bir_certificate && (
-                <a href={fileUrl(permit.bir_certificate)} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={buildFileUrl(permit.bir_certificate)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   View BIR Certificate
                 </a>
               )}
