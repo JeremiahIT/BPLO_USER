@@ -28,9 +28,7 @@ const sequelize = new Sequelize(
 
 // Test connection
 sequelize.authenticate()
-  .then(() => {
-    console.log("✅ Connected to Supabase PostgreSQL database");
-  })
+  .then(() => console.log("✅ Connected to PostgreSQL database"))
   .catch((err) => {
     console.error("❌ Sequelize connection error:", err);
     process.exit(1);

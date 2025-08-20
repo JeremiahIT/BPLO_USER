@@ -5,6 +5,7 @@ const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const { setupDatabase } = require('./setup');
+const db = require('./config/database'); // ✅ Import database
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -45,7 +46,7 @@ app.use(helmet());
 
 // ✅ Rate limit
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
+  windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100,
   message: 'Too many requests from this IP, try again later.',
 });
@@ -60,10 +61,10 @@ app.use('/uploads', express.static('uploads'));
 
 // ✅ Health check
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     time: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
   });
 });
 
@@ -88,19 +89,19 @@ app.use('/api/electrical', require('./routes/electrical'));
 // ✅ Error handler
 app.use((err, req, res, next) => {
   console.error('❌ Server error:', err.stack);
-  res.status(500).json({ 
+  res.status(500).json({
     error: 'Internal server error',
     message: err.message,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
   });
 });
 
 // ✅ 404 handler
 app.use('*', (req, res) => {
-  res.status(404).json({ 
+  res.status(404).json({
     error: 'Route not found',
     path: req.originalUrl,
-    method: req.method
+    method: req.method,
   });
 });
 
@@ -108,7 +109,7 @@ app.use('*', (req, res) => {
 async function startServer() {
   try {
     console.log('🔧 Initializing database...');
-    await setupDatabase();
+    await setupDatabase(); // ensures Sequelize is synced
     console.log('✅ Database initialized');
 
     app.listen(PORT, () => {
