@@ -3,9 +3,10 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config();
+const path = require('path');
 
 const { setupDatabase } = require('./setup');
-const db = require('./config/database'); // ✅ Import database
+const db = require('./config/database');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -37,16 +38,16 @@ app.use(
   })
 );
 
-// ✅ Handle preflight requests
+// ✅ Handle preflight
 app.options('*', cors());
 
 // ✅ Security
 app.set('trust proxy', 1);
 app.use(helmet());
 
-// ✅ Rate limit
+// ✅ Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 1000,
   max: 100,
   message: 'Too many requests from this IP, try again later.',
 });
@@ -57,7 +58,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // ✅ Serve uploaded files
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ✅ Health check
 app.get('/health', (req, res) => {
@@ -68,7 +69,7 @@ app.get('/health', (req, res) => {
   });
 });
 
-// ✅ Database connection check middleware
+// ✅ DB connection check middleware
 app.use('/api/permits', (req, res, next) => {
   if (!db) {
     return res.status(500).json({ error: 'Database not connected' });
@@ -109,7 +110,7 @@ app.use('*', (req, res) => {
 async function startServer() {
   try {
     console.log('🔧 Initializing database...');
-    await setupDatabase(); // ensures Sequelize is synced
+    await setupDatabase();
     console.log('✅ Database initialized');
 
     app.listen(PORT, () => {

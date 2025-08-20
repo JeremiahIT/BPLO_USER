@@ -3,140 +3,89 @@ import { useNavigate } from "react-router-dom";
 import "./new_permit.css";
 import { buildApiUrl } from "../config/api";
 
-function NewPermit() {
+export default function NewPermitAdmin() {
   const navigate = useNavigate();
   const [permits, setPermits] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const fetchPermits = async () => {
-    try {
-      setLoading(true);
-      setError("");
-      const res = await fetch(buildApiUrl("/permits"));
-      if (!res.ok) {
-        throw new Error(`Failed to load permits (${res.status})`);
-      }
-      const data = await res.json();
-      setPermits(Array.isArray(data.permits) ? data.permits : []);
-    } catch (err) {
-      setError(err.message || "Failed to load permits");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchPermits = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(buildApiUrl("/permits"));
+        if (!response.ok) throw new Error(`Failed to fetch: ${response.status}`);
+        const data = await response.json();
+        setPermits(data.permits || []);
+      } catch (err) {
+        console.error("Fetch permits error:", err);
+        setError("Failed to load permits.");
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchPermits();
-    const interval = setInterval(fetchPermits, 20000);
-    return () => clearInterval(interval);
   }, []);
 
-  const formatDate = (value) => {
-    if (!value) return "-";
-    try {
-      return new Date(value).toLocaleString();
-    } catch {
-      return String(value);
-    }
-  };
-
-  const buildOwnerName = (p) => {
-    const parts = [
-      p.owner_first_name,
-      p.owner_middle_name,
-      p.owner_last_name,
-      p.owner_extension_name,
-    ].filter(Boolean);
-    return parts.join(" ");
-  };
-
-  const renderFileLink = (filePath) => {
-    if (!filePath) return "-";
-    // filePath = "uploads/1234.pdf" → served from backend
-    const url = `${process.env.REACT_APP_API_URL.replace("/api", "")}/${filePath}`;
-    return (
-      <a href={url} target="_blank" rel="noopener noreferrer">
-        View PDF
-      </a>
-    );
+  const fileUrl = (path) => {
+    if (!path) return null;
+    // Ensure your backend serves /uploads as static (app.use("/uploads", express.static("uploads")))
+    return buildApiUrl("/" + path.replace(/\\/g, "/"));
   };
 
   return (
-    <div className="container">
-      <button className="backButton" onClick={() => navigate("/")}>
-        Back
+    <div className="permit-container">
+      <button className="back-btn" onClick={() => navigate("/dashboard")}>
+        &larr; Back
       </button>
 
-      <div className="headerRow">
-        <h2>Business Permits</h2>
-        <div className="actions">
-          <button className="refreshButton" onClick={fetchPermits} disabled={loading}>
-            {loading ? "Loading…" : "Refresh"}
-          </button>
-        </div>
-      </div>
+      <h1 className="form-title">Submitted Business Permits</h1>
 
-      {error && <div className="errorBox">{error}</div>}
+      {loading && <p>Loading permits...</p>}
+      {error && <p className="error">{error}</p>}
 
-      <div className="tableContainer">
-        <table className="dataTable">
-          <thead>
-            <tr>
-              <th>Permit No.</th>
-              <th>Business Name</th>
-              <th>Trade Name</th>
-              <th>Business Type</th>
-              <th>TIN</th>
-              <th>Owner</th>
-              <th>Sex</th>
-              <th>Email</th>
-              <th>Telephone</th>
-              <th>Mobile</th>
-              <th>Mailing Address</th>
-              <th>Status</th>
-              <th>DTI Cert</th>
-              <th>SEC Cert</th>
-              <th>CDA Cert</th>
-              <th>BIR Cert</th>
-              <th>Created</th>
-            </tr>
-          </thead>
-          <tbody>
-            {permits.length === 0 && !loading ? (
-              <tr>
-                <td colSpan={17} className="emptyCell">
-                  No permits found
-                </td>
-              </tr>
-            ) : (
-              permits.map((p) => (
-                <tr key={p.id}>
-                  <td>{p.permit_number || "-"}</td>
-                  <td>{p.business_name || "-"}</td>
-                  <td>{p.trade_name || "-"}</td>
-                  <td>{p.business_type || "-"}</td>
-                  <td>{p.tax_identification_number || "-"}</td>
-                  <td>{buildOwnerName(p) || "-"}</td>
-                  <td>{p.owner_sex || "-"}</td>
-                  <td>{p.email || "-"}</td>
-                  <td>{p.telephone || "-"}</td>
-                  <td>{p.mobile || "-"}</td>
-                  <td>{p.mail_address || "-"}</td>
-                  <td>{p.status || "pending"}</td>
-                  <td>{renderFileLink(p.dti_certificate)}</td>
-                  <td>{renderFileLink(p.sec_certificate)}</td>
-                  <td>{renderFileLink(p.cda_certificate)}</td>
-                  <td>{renderFileLink(p.bir_certificate)}</td>
-                  <td>{formatDate(p.created_at)}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+      {!loading && permits.length === 0 && <p>No permits submitted yet.</p>}
+
+      <div className="permit-list">
+        {permits.map((permit) => (
+          <div key={permit.id} className="permit-card">
+            <h2>{permit.business_name}</h2>
+            <p><strong>Permit No:</strong> {permit.permit_number}</p>
+            <p><strong>Business Type:</strong> {permit.business_type}</p>
+            <p><strong>Nature of Business:</strong> {permit.trade_name}</p>
+            <p><strong>TIN:</strong> {permit.tax_identification_number}</p>
+            <p><strong>Owner:</strong> {permit.owner_first_name} {permit.owner_middle_name || ""} {permit.owner_last_name}</p>
+            <p><strong>Gender:</strong> {permit.owner_sex}</p>
+            <p><strong>Mail Address:</strong> {permit.mail_address}</p>
+            <p><strong>Email:</strong> {permit.email}</p>
+            <p><strong>Mobile:</strong> {permit.mobile}</p>
+
+            {/* File links */}
+            <div className="files">
+              {permit.dti_certificate && (
+                <a href={fileUrl(permit.dti_certificate)} target="_blank" rel="noopener noreferrer">
+                  View DTI Certificate
+                </a>
+              )}
+              {permit.sec_certificate && (
+                <a href={fileUrl(permit.sec_certificate)} target="_blank" rel="noopener noreferrer">
+                  View SEC Certificate
+                </a>
+              )}
+              {permit.cda_certificate && (
+                <a href={fileUrl(permit.cda_certificate)} target="_blank" rel="noopener noreferrer">
+                  View CDA Certificate
+                </a>
+              )}
+              {permit.bir_certificate && (
+                <a href={fileUrl(permit.bir_certificate)} target="_blank" rel="noopener noreferrer">
+                  View BIR Certificate
+                </a>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
 }
-
-export default NewPermit;
