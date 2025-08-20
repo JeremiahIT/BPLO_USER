@@ -1,9 +1,11 @@
+// routes/permit.js
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const BusinessPermit = require('../models/BusinessPermit'); // ✅ Use the model
+const BusinessPermit = require('../models/BusinessPermit');
+
 const router = express.Router();
 
 // -------------------- Ensure uploads directory exists --------------------
@@ -21,10 +23,10 @@ const storage = multer.diskStorage({
 
 const upload = multer({ 
   storage,
-  limits: { fileSize: 10 * 1024 * 1024 }
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB
 });
 
-// -------------------- POST /api/permits --------------------
+// -------------------- POST /api/permits — Create New Permit --------------------
 router.post(
   '/',
   upload.fields([
@@ -58,15 +60,13 @@ router.post(
       } = req.body;
 
       const files = req.files || {};
-      const dti_certificate = files.dtiCertificate ? files.dtiCertificate[0].path : null;
-      const sec_certificate = files.secCertificate ? files.secCertificate[0].path : null;
-      const cda_certificate = files.cdaCertificate ? files.cdaCertificate[0].path : null;
-      const bir_certificate = files.birCertificate ? files.birCertificate[0].path : null;
+      const dti_certificate = files.dtiCertificate?.[0]?.path || null;
+      const sec_certificate = files.secCertificate?.[0]?.path || null;
+      const cda_certificate = files.cdaCertificate?.[0]?.path || null;
+      const bir_certificate = files.birCertificate?.[0]?.path || null;
 
-      // Generate permit number
       const permit_number = `BPLO-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
-      // Create using Sequelize model
       const permit = await BusinessPermit.create({
         permit_number,
         business_type,
@@ -89,16 +89,40 @@ router.post(
         bir_certificate
       });
 
-      res.status(201).json({
-        message: 'Permit created successfully',
-        permit
-      });
-
+      res.status(201).json({ message: 'Permit created successfully', permit });
     } catch (error) {
       console.error('Create permit error:', error);
       res.status(500).json({ error: 'Internal server error', message: error.message });
     }
   }
 );
+
+// -------------------- GET /api/permits — All Permits --------------------
+router.get('/', async (req, res) => {
+  try {
+    const permits = await BusinessPermit.findAll({ order: [['created_at', 'DESC']] });
+    res.json({ permits });
+  } catch (error) {
+    console.error('Get permits error:', error);
+    res.status(500).json({ error: 'Server error', message: error.message });
+  }
+});
+
+// -------------------- GET /api/permits/:id — Single Permit --------------------
+router.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const permit = await BusinessPermit.findByPk(id);
+
+    if (!permit) {
+      return res.status(404).json({ error: 'Permit not found' });
+    }
+
+    res.json({ permit });
+  } catch (error) {
+    console.error('Get permit error:', error);
+    res.status(500).json({ error: 'Server error', message: error.message });
+  }
+});
 
 module.exports = router;
