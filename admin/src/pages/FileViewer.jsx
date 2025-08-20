@@ -5,8 +5,8 @@ import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 
-// tell react-pdf where to find the PDF worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+// Tell react-pdf where to find the PDF worker (served from public folder)
+pdfjs.GlobalWorkerOptions.workerSrc = `${process.env.PUBLIC_URL}/pdf.worker.min.js`;
 
 export default function FileViewer() {
   const location = useLocation();
@@ -42,7 +42,11 @@ export default function FileViewer() {
           loading={<p>Loading PDF...</p>}
         >
           {Array.from(new Array(numPages), (el, index) => (
-            <Page key={`page_${index + 1}`} pageNumber={index + 1} />
+            <Page
+              key={`page_${index + 1}`}
+              pageNumber={index + 1}
+              width={800}
+            />
           ))}
         </Document>
       ) : (
