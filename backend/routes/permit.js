@@ -1,7 +1,6 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
-const db = require('../config/database'); // This is Sequelize instance
-const BusinessPermit = require('../models/BusinessPermit.js'); // You'll need to create this model
+const db = require('../config/database');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -32,8 +31,18 @@ const upload = multer({
   }
 });
 
-// -------------------- Create new permit (Using Sequelize) --------------------
+// -------------------- Database connection middleware --------------------
+const checkDatabase = (req, res, next) => {
+  if (!db || !db.query) {
+    console.error('Database connection not available');
+    return res.status(500).json({ error: 'Database connection failed' });
+  }
+  next();
+};
+
+// -------------------- Create new permit --------------------
 router.post('/', 
+  checkDatabase,
   upload.fields([
     { name: 'dtiCertificate', maxCount: 1 }, 
     { name: 'secCertificate', maxCount: 1 }, 
@@ -53,7 +62,6 @@ router.post('/',
     try {
       console.log('Received permit creation request');
       console.log('Body:', req.body);
-      console.log('Files:', req.files);
 
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -73,10 +81,10 @@ router.post('/',
         owner_first_name,
         owner_middle_name,
         owner_last_name,
-        owner_extension_name,
+        owner_extension_name = null,
         owner_sex,
         mail_address,
-        telephone,
+        telephone = null,
         mobile,
         email
       } = req.body;
@@ -91,37 +99,45 @@ router.post('/',
       // Generate permit number
       const permitNumber = `BPLO-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
-      console.log('Creating permit with number:', permitNumber);
+      console.log('Inserting into database with permit number:', permitNumber);
 
-      // Using Sequelize to create the record
-      const permit = await db.models.BusinessPermit.create({
-        permit_number: permitNumber,
-        business_type,
-        registration_number: registration_number || null,
-        business_name,
-        tax_identification_number: tax_identification_number || null,
-        trade_name: trade_name || null,
-        owner_first_name,
-        owner_middle_name: owner_middle_name || null,
-        owner_last_name,
-        owner_extension_name: owner_extension_name || null,
-        owner_sex: owner_sex || null,
-        mail_address,
-        telephone: telephone || null,
-        mobile,
-        email,
-        dti_certificate: dtiCertificate,
-        sec_certificate: secCertificate,
-        cda_certificate: cdaCertificate,
-        bir_certificate: birCertificate,
-        status: 'pending'
-      });
+      // Use db.query instead of sequelize
+      const result = await db.query(
+        `INSERT INTO business_permits (
+          permit_number, business_type, registration_number, business_name,
+          tax_identification_number, trade_name, owner_first_name, owner_middle_name,
+          owner_last_name, owner_extension_name, owner_sex, mail_address, telephone,
+          mobile, email, dti_certificate, sec_certificate, cda_certificate, bir_certificate
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
+        RETURNING *`,
+        [
+          permitNumber, 
+          business_type, 
+          registration_number || null, 
+          business_name,
+          tax_identification_number || null, 
+          trade_name || null, 
+          owner_first_name,
+          owner_middle_name || null,
+          owner_last_name,
+          owner_extension_name, 
+          owner_sex || null, 
+          mail_address,
+          telephone,
+          mobile,
+          email, 
+          dtiCertificate, 
+          secCertificate, 
+          cdaCertificate, 
+          birCertificate
+        ]
+      );
 
-      console.log('Permit created successfully:', permit.toJSON());
+      console.log('Permit created successfully:', result.rows[0]);
 
       res.status(201).json({ 
         message: 'Permit created successfully', 
-        permit: permit.toJSON()
+        permit: result.rows[0] 
       });
 
     } catch (error) {
@@ -132,6 +148,36 @@ router.post('/',
         stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
       });
     }
+});
+
+// -------------------- GET all permits --------------------
+router.get('/', checkDatabase, async (req, res) => {
+  try {
+    const result = await db.query(
+      `SELECT * FROM business_permits ORDER BY created_at DESC`
+    );
+    res.json({ permits: result.rows });
+  } catch (error) {
+    console.error('Get permits error:', error);
+    res.status(500).json({ error: 'Server error', details: error.message });
+  }
+});
+
+// -------------------- GET single permit --------------------
+router.get('/:id', checkDatabase, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await db.query(`SELECT * FROM business_permits WHERE id = $1`, [id]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Permit not found' });
+    }
+    
+    res.json({ permit: result.rows[0] });
+  } catch (error) {
+    console.error('Get permit error:', error);
+    res.status(500).json({ error: 'Server error', details: error.message });
+  }
 });
 
 module.exports = router;
