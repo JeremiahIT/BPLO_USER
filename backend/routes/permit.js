@@ -1,6 +1,6 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
-const db = require('../config/database');
+const sequelize = require('../config/database'); // ✅ Correct import
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -27,20 +27,22 @@ const storage = multer.diskStorage({
 const upload = multer({ 
   storage,
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB limit
+    fileSize: 10 * 1024 * 1024, // 10MB
   }
 });
 
 // -------------------- Database connection middleware --------------------
-const checkDatabase = (req, res, next) => {
-  if (!db || !db.query) {
-    console.error('Database connection not available');
-    return res.status(500).json({ error: 'Database connection failed' });
+const checkDatabase = async (req, res, next) => {
+  try {
+    await sequelize.authenticate();
+    next();
+  } catch (error) {
+    console.error('Database connection error:', error);
+    res.status(500).json({ error: 'Database connection failed' });
   }
-  next();
 };
 
-// -------------------- Create new permit --------------------
+// -------------------- POST /api/permits — Create New Permit --------------------
 router.post('/', 
   checkDatabase,
   upload.fields([
@@ -61,11 +63,8 @@ router.post('/',
   async (req, res) => {
     try {
       console.log('Received permit creation request');
-      console.log('Body:', req.body);
-
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        console.log('Validation errors:', errors.array());
         return res.status(400).json({ 
           error: 'Validation failed', 
           details: errors.array() 
@@ -99,81 +98,86 @@ router.post('/',
       // Generate permit number
       const permitNumber = `BPLO-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
-      console.log('Inserting into database with permit number:', permitNumber);
-
-      // Use db.query instead of sequelize
-      const result = await db.query(
+      // Insert using raw SQL
+      const [result] = await sequelize.query(
         `INSERT INTO business_permits (
           permit_number, business_type, registration_number, business_name,
           tax_identification_number, trade_name, owner_first_name, owner_middle_name,
           owner_last_name, owner_extension_name, owner_sex, mail_address, telephone,
           mobile, email, dti_certificate, sec_certificate, cda_certificate, bir_certificate
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         RETURNING *`,
-        [
-          permitNumber, 
-          business_type, 
-          registration_number || null, 
-          business_name,
-          tax_identification_number || null, 
-          trade_name || null, 
-          owner_first_name,
-          owner_middle_name || null,
-          owner_last_name,
-          owner_extension_name, 
-          owner_sex || null, 
-          mail_address,
-          telephone,
-          mobile,
-          email, 
-          dtiCertificate, 
-          secCertificate, 
-          cdaCertificate, 
-          birCertificate
-        ]
+        {
+          replacements: [
+            permitNumber,
+            business_type,
+            registration_number || null,
+            business_name,
+            tax_identification_number || null,
+            trade_name || null,
+            owner_first_name,
+            owner_middle_name || null,
+            owner_last_name,
+            owner_extension_name || null,
+            owner_sex || null,
+            mail_address,
+            telephone || null,
+            mobile,
+            email,
+            dtiCertificate,
+            secCertificate,
+            cdaCertificate,
+            birCertificate
+          ],
+          type: sequelize.QueryTypes.INSERT
+        }
       );
 
-      console.log('Permit created successfully:', result.rows[0]);
-
-      res.status(201).json({ 
-        message: 'Permit created successfully', 
-        permit: result.rows[0] 
+      res.status(201).json({
+        message: 'Permit created successfully',
+        permit: result[0] // Only one row returned
       });
 
     } catch (error) {
       console.error('Create permit error details:', error);
-      res.status(500).json({ 
-        error: 'Server error creating permit', 
-        details: error.message,
+      res.status(500).json({
+        error: 'Internal server error',
+        message: error.message,
         stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
       });
     }
 });
 
-// -------------------- GET all permits --------------------
+// -------------------- GET /api/permits — All Permits --------------------
 router.get('/', checkDatabase, async (req, res) => {
   try {
-    const result = await db.query(
+    const [permits] = await sequelize.query(
       `SELECT * FROM business_permits ORDER BY created_at DESC`
     );
-    res.json({ permits: result.rows });
+    res.json({ permits });
   } catch (error) {
     console.error('Get permits error:', error);
     res.status(500).json({ error: 'Server error', details: error.message });
   }
 });
 
-// -------------------- GET single permit --------------------
+// -------------------- GET /api/permits/:id — Single Permit --------------------
 router.get('/:id', checkDatabase, async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await db.query(`SELECT * FROM business_permits WHERE id = $1`, [id]);
-    
-    if (result.rows.length === 0) {
+    const [result] = await sequelize.query(
+      `SELECT * FROM business_permits WHERE id = ?`,
+      {
+        replacements: [id],
+        type: sequelize.QueryTypes.SELECT
+      }
+    );
+
+    if (!result.length) {
       return res.status(404).json({ error: 'Permit not found' });
     }
-    
-    res.json({ permit: result.rows[0] });
+
+    res.json({ permit: result[0] });
   } catch (error) {
     console.error('Get permit error:', error);
     res.status(500).json({ error: 'Server error', details: error.message });
