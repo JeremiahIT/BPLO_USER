@@ -1,82 +1,58 @@
-.container {
-  padding: 20px;
-  min-height: 100vh;
-  background-color: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  align-items: stretch;
+/* PermitTable.css */
+.permit-table-container {
+  overflow-x: auto;
 }
 
-.backButton {
-  background: #333;
-  color: white;
-  border: none;
-  padding: 5px 10px; /* Reduced padding for a smaller button */
-  cursor: pointer;
-  margin-bottom: 20px;
-  font-size: 14px; /* Reduced font size */
-}
-
-.headerRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.actions .refreshButton {
-  background: #1976d2;
-  color: #fff;
-  border: none;
-  padding: 8px 16px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.errorBox {
-  background: #fdecea;
-  color: #b71c1c;
-  border: 1px solid #f5c6cb;
-  padding: 10px 12px;
-  border-radius: 6px;
-  margin-bottom: 12px;
-}
-
-.tableContainer {
-  overflow: auto;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-}
-
-.dataTable {
+.permit-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.dataTable thead th {
-  position: sticky;
-  top: 0;
-  background: #f9fafb;
+.permit-table th,
+.permit-table td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
   text-align: left;
-  padding: 10px 12px;
-  border-bottom: 1px solid #e5e7eb;
-  font-weight: 600;
-  color: #374151;
 }
 
-.dataTable tbody td {
-  padding: 10px 12px;
-  border-bottom: 1px solid #f1f5f9;
-  color: #111827;
-  font-size: 14px;
+.permit-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
 }
 
-.dataTable tbody tr:hover {
-  background: #f8fafc;
-}
+/* Responsive styles for smaller screens */
+@media screen and (max-width: 768px) {
+  .permit-table thead {
+    display: none; /* Hide header on small screens */
+  }
 
-.emptyCell {
-  text-align: center;
-  color: #6b7280;
+  .permit-table,
+  .permit-table tbody,
+  .permit-table tr,
+  .permit-table td {
+    display: block; /* Stack elements vertically */
+  }
+
+  .permit-table tr {
+    border: 1px solid #ddd;
+    margin-bottom: 15px;
+  }
+
+  .permit-table td {
+    border: none;
+    border-bottom: 1px solid #ddd;
+    position: relative;
+    padding-left: 50%; /* Make room for the data-label */
+    text-align: right;
+  }
+
+  .permit-table td:before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0;
+    width: 50%;
+    padding-left: 15px;
+    font-weight: bold;
+    text-align: left;
+  }
 }

@@ -9,6 +9,7 @@ import ElectricalForm from './Backroom/electrical';
 import SolidWaste from './Backroom/solidwaste';
 import Zoning from './Backroom/zoning';
 import BackroomDashboard from './Backroom/brdashboard';
+import FileViewer from "./pages/FileViewer";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/electrical" element={<ElectricalForm />} />
         <Route path="/solidwaste" element={<SolidWaste />} />
         <Route path="/zoning" element={<Zoning />} />
+        <Route path="/viewer" element={<FileViewer />} />
 
       </Routes>
     </Router>

@@ -27,6 +27,13 @@ export default function NewPermitAdmin() {
     fetchPermits();
   }, []);
 
+  // helper to navigate to viewer
+  const viewFile = (path) => {
+    if (!path) return;
+    const fileUrl = buildFileUrl(path);
+    navigate(`/viewer?file=${encodeURIComponent(fileUrl)}`);
+  };
+
   return (
     <div className="permit-container">
       <button className="back-btn" onClick={() => navigate("/dashboard")}>
@@ -58,43 +65,27 @@ export default function NewPermitAdmin() {
             <p><strong>Email:</strong> {permit.email}</p>
             <p><strong>Mobile:</strong> {permit.mobile}</p>
 
-            {/* File links */}
+            {/* File links → now open inside app */}
             <div className="files">
               {permit.dti_certificate && (
-                <a
-                  href={buildFileUrl(permit.dti_certificate)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <button onClick={() => viewFile(permit.dti_certificate)}>
                   View DTI Certificate
-                </a>
+                </button>
               )}
               {permit.sec_certificate && (
-                <a
-                  href={buildFileUrl(permit.sec_certificate)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <button onClick={() => viewFile(permit.sec_certificate)}>
                   View SEC Certificate
-                </a>
+                </button>
               )}
               {permit.cda_certificate && (
-                <a
-                  href={buildFileUrl(permit.cda_certificate)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <button onClick={() => viewFile(permit.cda_certificate)}>
                   View CDA Certificate
-                </a>
+                </button>
               )}
               {permit.bir_certificate && (
-                <a
-                  href={buildFileUrl(permit.bir_certificate)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <button onClick={() => viewFile(permit.bir_certificate)}>
                   View BIR Certificate
-                </a>
+                </button>
               )}
             </div>
           </div>
