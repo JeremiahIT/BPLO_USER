@@ -37,7 +37,7 @@ const NewPermit = () => {
     const { name, value } = e.target;
     let formattedValue = value;
 
-    // Format TIN (000-00-0000)
+    // Format TIN (000-00-0000-)
     if (name === "tin") {
       const numeric = value.replace(/\D/g, "");
       if (numeric.length > 5) {
