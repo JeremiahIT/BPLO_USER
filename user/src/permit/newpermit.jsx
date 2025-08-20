@@ -97,7 +97,7 @@ const NewPermit = () => {
       if (form.birCertificate) formData.append("birCertificate", form.birCertificate);
 
       // Debug: Log form data
-      console.log("Submitting form data:");
+      console.log("Submitting form data:"); 
       for (let [key, value] of formData.entries()) {
         console.log(key, value);
       }
