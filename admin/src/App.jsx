@@ -3,12 +3,9 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Dashboard from "./mainpage/dashboard";
 import NewPermit from "./permits/new_permit";
 import RenewalPermit from "./permits/renewal_permit";
-import CHO from './Backroom/cho';
-import OBO from './Backroom/obo';
-import ElectricalForm from './Backroom/electrical';
-import SolidWaste from '.Backroom/solidwaste';
 import Zoning from './Backroom/zoning';
 import BackroomDashboard from './Backroom/brdashboard';
+import PdfViewer from "./viewer/PdfViewer";
 
 function App() {
   return (
@@ -19,11 +16,8 @@ function App() {
         <Route path="/" element={<BackroomDashboard />} />
         <Route path="/permits/new_permit" element={<NewPermit />} />
         <Route path="/permits/renewal_permit" element={<RenewalPermit />} />
-        <Route path="/cho" element={<CHO />} />
-        <Route path="/obo" element={<OBO />} />
-        <Route path="/electrical" element={<ElectricalForm />} />
-        <Route path="/solidwaste" element={<SolidWaste />} />
         <Route path="/zoning" element={<Zoning />} />
+        <Route path="/viewer" element={<PdfViewer />} />
 
       </Routes>
     </Router>
