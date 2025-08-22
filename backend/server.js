@@ -82,10 +82,6 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/permits', require('./routes/permit'));
 app.use('/api/renewals', require('./routes/renewal'));
 app.use('/api/zoning', require('./routes/zoning'));
-app.use('/api/solidwaste', require('./routes/solidwaste'));
-app.use('/api/obo', require('./routes/obo'));
-app.use('/api/cho', require('./routes/cho'));
-app.use('/api/electrical', require('./routes/electrical'));
 
 // ✅ Error handler
 app.use((err, req, res, next) => {
